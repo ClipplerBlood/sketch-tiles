@@ -12,6 +12,9 @@ module.exports = {
 
   env: {
     browser: true,
+    commonjs: true,
+    es2021: true,
+    jquery: true,
   },
 
   extends: ['eslint:recommended', '@typhonjs-fvtt/eslint-config-foundry.js/0.8.0', 'plugin:prettier/recommended'],
@@ -20,6 +23,10 @@ module.exports = {
 
   rules: {
     // Specify any specific ESLint rules.
+    'no-unused-vars': [
+      'error',
+      { vars: 'local', args: 'after-used', ignoreRestSiblings: false, argsIgnorePattern: '^_' },
+    ],
   },
 
   overrides: [

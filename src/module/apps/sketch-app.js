@@ -65,6 +65,22 @@ export class SketchApp extends Application {
   }
 
   /**
+   * Buttons
+   * @override
+   * @private
+   */
+  _getHeaderButtons() {
+    let buttons = super._getHeaderButtons();
+    buttons.unshift({
+      label: 'Upload',
+      icon: 'fa-solid fa-up-from-line',
+      class: 'upload-sketch',
+      onclick: () => this._upload(),
+    });
+    return buttons;
+  }
+
+  /**
    * Activate the listeners
    * @override
    * @param html
@@ -74,6 +90,7 @@ export class SketchApp extends Application {
     const $svgContainer = html.closest('.sketch-app-container');
     $svgContainer.on('pointerdown', (ev) => this.handlePointerDown(ev));
     $svgContainer.on('pointermove', (ev) => this.handlePointerMove(ev));
+    this.svgElement = html.find('svg').get(0);
     html.find('[data-action="upload"]').click(() => this._upload());
   }
 
