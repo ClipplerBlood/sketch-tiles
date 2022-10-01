@@ -47,9 +47,11 @@ export class SketchApp extends Application {
     super(...props);
     // Some definitions:
     this.svg = undefined; // The wrapper using SVG.js lib
-    this.drawnPaths = []; // The list of raw (pointX, pointY, pressure) which need to be converted into a stroke
+    this.currentMousePath = undefined; // The current MOUSE path (being drawn)
     this.currentSvgPath = undefined; // The current Path (inside the SVG) which is being drawn, or the last drawn path
     this._drawTime = 0; // Time of last update. Used in limiting the number of points per second
+    this.pastHistory = []; // List with all past operation. Maybe bound it to a max size?
+    this.futureHistory = []; // List with all the undone operations. The name is a bit of an oxymoron
 
     // Register the keydown listener (for ctrl+z and maybe something else)
     this.keyDownListener = (ev) => {
@@ -58,6 +60,11 @@ export class SketchApp extends Application {
         ev.stopPropagation();
         ev.preventDefault();
         this._undo();
+      } else if (ev.ctrlKey && ev.key === 'y') {
+        ev.stopImmediatePropagation();
+        ev.stopPropagation();
+        ev.preventDefault();
+        this._redo();
       }
     };
     document.addEventListener('keydown', this.keyDownListener);
@@ -102,6 +109,7 @@ export class SketchApp extends Application {
     const $svgContainer = html.closest('.sketch-app-container');
     $svgContainer.on('pointerdown', (ev) => this.handlePointerDown(ev));
     $svgContainer.on('pointermove', (ev) => this.handlePointerMove(ev));
+    $svgContainer.on('pointerup', (ev) => this.handlePointerUp(ev));
   }
 
   /**
@@ -110,7 +118,23 @@ export class SketchApp extends Application {
    */
   handlePointerDown(ev) {
     ev.target.setPointerCapture(ev.pointerId);
-    this._draw(ev, true);
+    if (ev.buttons === 1) {
+      this._draw(ev, true);
+    }
+  }
+
+  /**
+   * Pointer UP event (release)
+   * @param {MouseEvent} _ev
+   */
+  handlePointerUp(_ev) {
+    // If we already have a path, then store the old in the history and erase the future history
+    if (this.currentSvgPath != null) {
+      this.pastHistory.push({ action: 'draw', path: this.currentSvgPath });
+    }
+    this.futureHistory = []; // Clear the future history. No paradoxes allowed
+    this.currentMousePath = undefined;
+    this.currentSvgPath = undefined;
   }
 
   /**
@@ -118,13 +142,16 @@ export class SketchApp extends Application {
    * @param {MouseEvent} ev
    */
   handlePointerMove(ev) {
-    if (ev.buttons !== 1) return;
-    // Limit the number of draw calls per sec
+    // Limit the number of calls per sec
     const now = Date.now();
     if (now - this._drawTime < 1000 / 60) return;
     this._drawTime = now;
 
-    this._draw(ev, false);
+    if (ev.buttons === 1) {
+      this._draw(ev, false);
+    } else if (ev.buttons === 2) {
+      this._erase(ev);
+    }
   }
 
   /**
@@ -138,25 +165,45 @@ export class SketchApp extends Application {
   _draw(ev, isNewPath) {
     // Get the current point
     const pos = this._getPosition(ev);
-    const currentPoint = [pos.x, pos.y, ev.pressure ?? 1];
-    let currentPath;
+    const currentPoint = [pos.x, pos.y, ev.pressure];
 
     if (isNewPath) {
-      // Add the point to a new drawn path
-      currentPath = [currentPoint];
-      this.drawnPaths.push(currentPath);
-      // Set the current drawn path to a newly created path in the svg
+      // Add the point to a new drawn path and set the current svg path
+      this.currentMousePath = [currentPoint];
       this.currentSvgPath = this.svg.path({
-        d: getSvgPathFromStroke(getStroke(currentPath, _strokeOptions)),
-        'data-index': this.drawnPaths.length - 1,
+        d: getSvgPathFromStroke(getStroke(this.currentMousePath, _strokeOptions)),
       });
     } else {
-      // Add the point to the last drawn path
-      currentPath = this.drawnPaths.at(-1);
-      currentPath.push(currentPoint);
-      // Update the current svg path with the current drawn path
-      this.currentSvgPath.plot(getSvgPathFromStroke(getStroke(currentPath, _strokeOptions)));
+      // Add the point to the last drawn path and update the current svg path
+      this.currentMousePath.push(currentPoint);
+      this.currentSvgPath.plot(getSvgPathFromStroke(getStroke(this.currentMousePath, _strokeOptions)));
     }
+  }
+
+  /**
+   * Erase the paths intercepting the current mouse position
+   * @param ev
+   * @private
+   */
+  _erase(ev) {
+    // Get the mouse position and create an SVGPoint
+    const pos = this._getPosition(ev);
+    const point = this.svg.node.createSVGPoint();
+    point.x = pos.x;
+    point.y = pos.y;
+
+    // Look through all paths in the svg and check if the point is in
+    const toDelete = [];
+    for (const path of this.svg.find(':scope > path')) {
+      if (!path.node.isPointInFill(point)) continue;
+      toDelete.push(path);
+    }
+
+    // Delete all intercepting paths, saving them to history
+    toDelete.forEach((p) => {
+      this.pastHistory.push({ action: 'erase', path: p });
+      p.remove();
+    });
   }
 
   /**
@@ -174,14 +221,33 @@ export class SketchApp extends Application {
   }
 
   /**
-   * Deletes the last path
+   * Undoes the past action
    * @private
    */
   _undo() {
-    if (this.drawnPaths.length === 0) return;
-    this.drawnPaths.pop();
-    const lastIndex = this.drawnPaths.length;
-    this.svg.find(`[data-index="${lastIndex}"]`).remove();
+    // Get the last action
+    const lastAction = this.pastHistory.pop();
+    if (!lastAction) return;
+
+    // Handle the action types
+    if (lastAction.action === 'draw') lastAction.path.remove();
+    else if (lastAction.action === 'erase') this.svg.add(lastAction.path);
+
+    // Push the last action to the future history to be "redone"
+    this.futureHistory.push(lastAction);
+  }
+
+  /**
+   * Redoes the previously undone action
+   * @private
+   */
+  _redo() {
+    const nextAction = this.futureHistory.pop();
+    if (!nextAction) return;
+    // The code is the dual of undo
+    if (nextAction.action === 'erase') nextAction.path.remove();
+    else if (nextAction.action === 'draw') this.svg.add(nextAction.path);
+    this.pastHistory.push(nextAction);
   }
 
   /**
