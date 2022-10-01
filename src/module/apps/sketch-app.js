@@ -44,7 +44,7 @@ export class SketchApp extends Application {
    */
   constructor(...props) {
     super(...props);
-    this.svg = undefined;
+    this.svgElement = undefined;
     this.points = [];
     this.pathsPoints = [];
     this.renderedSvgPaths = [];
@@ -71,10 +71,9 @@ export class SketchApp extends Application {
    */
   activateListeners(html) {
     super.activateListeners(html);
-    const $svg = html.find('svg');
-    $svg.on('pointerdown', (ev) => this.handlePointerDown(ev));
-    $svg.on('pointermove', (ev) => this.handlePointerMove(ev));
-    this.svg = $svg.get(0);
+    const $svgContainer = html.closest('.sketch-app-container');
+    $svgContainer.on('pointerdown', (ev) => this.handlePointerDown(ev));
+    $svgContainer.on('pointermove', (ev) => this.handlePointerMove(ev));
     html.find('[data-action="upload"]').click(() => this._upload());
   }
 
@@ -122,7 +121,7 @@ export class SketchApp extends Application {
 
     const stroke = getStroke(currentPath, _strokeOptions);
     this.renderedSvgPaths[this.renderedSvgPaths.length - 1] = getSvgPathFromStroke(stroke);
-    this.svg.innerHTML = this.renderedSvgPaths.map((pathData) => `<path d="${pathData}"></path>`);
+    this.svgElement.innerHTML = this.renderedSvgPaths.map((pathData) => `<path d="${pathData}"></path>`);
   }
 
   /**
@@ -144,7 +143,7 @@ export class SketchApp extends Application {
    * @private
    */
   _forceDraw() {
-    this.svg.innerHTML = this._toSvgPath().map((pathData) => `<path d="${pathData}"></path>`);
+    this.svgElement.innerHTML = this._toSvgPath().map((pathData) => `<path d="${pathData}"></path>`);
   }
 
   /**
@@ -178,7 +177,7 @@ export class SketchApp extends Application {
     const source = this.constructor.storageSource;
     const path = this.constructor.path;
     const name = new Date().toISOString().slice(0, 19).replace(/:/g, '') + '.svg';
-    const file = getFileFromSvgEl(this.svg, name);
+    const file = getFileFromSvgEl(this.svgElement, name);
 
     // Create folder if not exists
     try {
@@ -194,7 +193,6 @@ export class SketchApp extends Application {
     if (createResponse.status !== 'success') return;
     await createTile(createResponse.path);
     this.close();
-    console.log(createResponse);
   }
 }
 

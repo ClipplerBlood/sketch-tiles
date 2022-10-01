@@ -20,7 +20,6 @@ Hooks.once('ready', async () => {});
 // Button registration
 Hooks.on('getSceneControlButtons', (controls) => {
   if (!game.user.isGM) return;
-  console.log(controls);
   const tileControls = controls.find((c) => c.name === 'tiles');
   tileControls.tools.push({
     name: 'Sketch Tiles',
