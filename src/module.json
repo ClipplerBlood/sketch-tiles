@@ -1,12 +1,11 @@
 {
   "id": "sketch-tiles",
-  "title": "<human readable title for sketch-tiles>",
+  "title": "Sketch Tiles",
   "description": "<description of the package>",
   "authors": [
     {
-      "name": "<your name>",
-      "email": "<optionally your e-mail address>",
-      "discord": "<optionally your discord username>"
+      "name": "ClipplerBlood",
+      "discord": "ClipplerBlood#8146"
     }
   ],
   "url": "This is auto replaced",

@@ -1,4 +1,23 @@
-/* ---------------------------- */
-/*             Sass             */
-/* This is your Sass entry file */
-/* ---------------------------- */
+.sketch-app {
+  .sketch-app-container {
+    width: 100%;
+    height: 100%;
+    position: relative;
+  }
+
+  svg {
+    width: 100%;
+    height: 100%;
+    background-color: #ffffff;
+    touch-action: none;
+  }
+  .window-content {
+    padding: 0;
+    overflow: hidden;
+  }
+  .button-container {
+    position: absolute;
+    top: 0;
+    right: 0;
+  }
+}
