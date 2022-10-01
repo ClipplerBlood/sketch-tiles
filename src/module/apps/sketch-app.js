@@ -1,5 +1,6 @@
 import { createTile, getSvgPathFromStroke, getFileFromSvgEl } from '../utils.js';
 import { getStroke } from 'perfect-freehand';
+import { SVG } from '@svgdotjs/svg.js';
 
 export class SketchApp extends Application {
   static get defaultOptions() {
@@ -44,12 +45,20 @@ export class SketchApp extends Application {
    */
   constructor(...props) {
     super(...props);
-    this.svgElement = undefined;
-    this.points = [];
-    this.pathsPoints = [];
-    this.renderedSvgPaths = [];
+    // Some definitions:
+    this.svg = undefined; // The wrapper using SVG.js lib
+    this.drawnPaths = []; // The list of raw (pointX, pointY, pressure) which need to be converted into a stroke
+    this.currentSvgPath = undefined; // The current Path (inside the SVG) which is being drawn, or the last drawn path
+    this._drawTime = 0; // Time of last update. Used in limiting the number of points per second
+
+    // Register the keydown listener (for ctrl+z and maybe something else)
     this.keyDownListener = (ev) => {
-      if (ev.ctrlKey && ev.key === 'z') this._undo();
+      if (ev.ctrlKey && ev.key === 'z') {
+        ev.stopImmediatePropagation();
+        ev.stopPropagation();
+        ev.preventDefault();
+        this._undo();
+      }
     };
     document.addEventListener('keydown', this.keyDownListener);
   }
@@ -87,11 +96,12 @@ export class SketchApp extends Application {
    */
   activateListeners(html) {
     super.activateListeners(html);
+    this.svg = SVG(html.find('svg').get(0));
+
+    // Mouse Event listeners for the container
     const $svgContainer = html.closest('.sketch-app-container');
     $svgContainer.on('pointerdown', (ev) => this.handlePointerDown(ev));
     $svgContainer.on('pointermove', (ev) => this.handlePointerMove(ev));
-    this.svgElement = html.find('svg').get(0);
-    html.find('[data-action="upload"]').click(() => this._upload());
   }
 
   /**
@@ -109,6 +119,11 @@ export class SketchApp extends Application {
    */
   handlePointerMove(ev) {
     if (ev.buttons !== 1) return;
+    // Limit the number of draw calls per sec
+    const now = Date.now();
+    if (now - this._drawTime < 1000 / 60) return;
+    this._drawTime = now;
+
     this._draw(ev, false);
   }
 
@@ -125,20 +140,23 @@ export class SketchApp extends Application {
     const pos = this._getPosition(ev);
     const currentPoint = [pos.x, pos.y, ev.pressure ?? 1];
     let currentPath;
-    // If is a new path, simply add a point to the paths
-    if (isNewPath) {
-      // Add the point to a new path
-      currentPath = [currentPoint];
-      this.pathsPoints.push(currentPath);
-      this.renderedSvgPaths.push([]);
-    } else {
-      currentPath = this.pathsPoints.at(-1);
-      currentPath.push(currentPoint);
-    }
 
-    const stroke = getStroke(currentPath, _strokeOptions);
-    this.renderedSvgPaths[this.renderedSvgPaths.length - 1] = getSvgPathFromStroke(stroke);
-    this.svgElement.innerHTML = this.renderedSvgPaths.map((pathData) => `<path d="${pathData}"></path>`);
+    if (isNewPath) {
+      // Add the point to a new drawn path
+      currentPath = [currentPoint];
+      this.drawnPaths.push(currentPath);
+      // Set the current drawn path to a newly created path in the svg
+      this.currentSvgPath = this.svg.path({
+        d: getSvgPathFromStroke(getStroke(currentPath, _strokeOptions)),
+        'data-index': this.drawnPaths.length - 1,
+      });
+    } else {
+      // Add the point to the last drawn path
+      currentPath = this.drawnPaths.at(-1);
+      currentPath.push(currentPoint);
+      // Update the current svg path with the current drawn path
+      this.currentSvgPath.plot(getSvgPathFromStroke(getStroke(currentPath, _strokeOptions)));
+    }
   }
 
   /**
@@ -156,31 +174,14 @@ export class SketchApp extends Application {
   }
 
   /**
-   * Redraws ALL the drawn paths
-   * @private
-   */
-  _forceDraw() {
-    this.svgElement.innerHTML = this._toSvgPath().map((pathData) => `<path d="${pathData}"></path>`);
-  }
-
-  /**
-   * Converts all the DRAWN paths to SVG paths
-   * @returns {(string|*)[]}
-   * @private
-   */
-  _toSvgPath() {
-    return this.pathsPoints.map((path) => getSvgPathFromStroke(getStroke(path, _strokeOptions)));
-  }
-
-  /**
    * Deletes the last path
    * @private
    */
   _undo() {
-    if (this.pathsPoints.length === 0) return;
-    this.pathsPoints.pop();
-    this.renderedSvgPaths.pop();
-    this._forceDraw();
+    if (this.drawnPaths.length === 0) return;
+    this.drawnPaths.pop();
+    const lastIndex = this.drawnPaths.length;
+    this.svg.find(`[data-index="${lastIndex}"]`).remove();
   }
 
   /**
@@ -194,7 +195,7 @@ export class SketchApp extends Application {
     const source = this.constructor.storageSource;
     const path = this.constructor.path;
     const name = new Date().toISOString().slice(0, 19).replace(/:/g, '') + '.svg';
-    const file = getFileFromSvgEl(this.svgElement, name);
+    const file = getFileFromSvgEl(this.svg.node, name);
 
     // Create folder if not exists
     try {

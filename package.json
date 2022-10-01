@@ -53,6 +53,7 @@
     "*.(json|yml|scss)": "prettier --write"
   },
   "dependencies": {
+    "@svgdotjs/svg.js": "^3.1.2",
     "perfect-freehand": "^1.2.0"
   }
 }
