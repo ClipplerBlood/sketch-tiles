@@ -11,6 +11,7 @@ export class SketchApp extends Application {
       width: 420,
       height: 700,
       title: 'Sketch Tiles',
+      resizable: true,
     });
   }
 
@@ -145,22 +146,7 @@ export class SketchApp extends Application {
     $svgContainer.on('pointermove', (ev) => this.handlePointerMove(ev));
     $svgContainer.on('pointerup', (ev) => this.handlePointerUp(ev));
     $svgContainer.on('pointerleave', (ev) => this.handlePointerLeave(ev));
-    $svgContainer.on('wheel', (event) => {
-      // deltaY obviously records vertical scroll, deltaX and deltaZ exist too.
-      // this condition makes sure it's vertical scrolling that happened
-      if (event.originalEvent.deltaY !== 0) {
-        let strokeSize = this._sketchSettings.strokeOptions.size;
-
-        if (event.originalEvent.deltaY < 0) {
-          strokeSize += 4;
-        } else {
-          strokeSize -= 4;
-        }
-        strokeSize = Math.clamped(strokeSize, 4, 100);
-        this.updateSketchSettings({ 'strokeOptions.size': strokeSize });
-        this._preview(event);
-      }
-    });
+    $svgContainer.on('wheel', (ev) => this.handleWheel(ev));
 
     // Render the palette
     this.renderPalette();
@@ -222,6 +208,24 @@ export class SketchApp extends Application {
     this._removePreview();
   }
 
+  /**
+   * Handles the scroll wheel
+   * @param _ev
+   */
+  handleWheel(_ev) {
+    if (_ev.originalEvent.deltaY !== 0) {
+      let strokeSize = parseInt(this._sketchSettings.strokeOptions.size);
+
+      if (_ev.originalEvent.deltaY < 0) {
+        strokeSize += 4;
+      } else {
+        strokeSize -= 4;
+      }
+      strokeSize = Math.clamped(strokeSize, 4, 100);
+      this.updateSketchSettings({ 'strokeOptions.size': strokeSize });
+      this._preview(_ev);
+    }
+  }
   /**
    * Draws the SVG incrementally.
    * This means that only the current drawn path is converted to SVG,
@@ -377,7 +381,7 @@ export class SketchApp extends Application {
 
     // If success, then create the tile
     if (createResponse.status !== 'success') return;
-    await createTile(createResponse.path);
+    await createTile(createResponse.path, this.svg.node);
     await this.close();
   }
 
@@ -420,5 +424,29 @@ export class SketchApp extends Application {
   setSvgBackgroundColor(bg = undefined) {
     bg = bg ?? this.sketchSettings.backgroundColor;
     this.svg.css({ 'background-color': bg });
+  }
+
+  /**
+   * Set the position of the Application.
+   * @override
+   * @param left
+   * @param top
+   * @param width
+   * @param height
+   * @param scale
+   * @returns {{left: number, top: number, width: number, height: number, scale: number}|void}
+   */
+  setPosition({ left, top, width, height, scale } = {}) {
+    // If the width is small, remove stuff from the bar
+    if (width < 300) {
+      this.element.find('.window-title').hide();
+      this.element.find('.header-button.close').hide();
+    } else if (width < 350) {
+      this.element.find('.window-title').hide();
+    } else {
+      this.element.find('.window-title').show();
+      this.element.find('.header-button.close').show();
+    }
+    super.setPosition({ left, top, width, height, scale });
   }
 }
