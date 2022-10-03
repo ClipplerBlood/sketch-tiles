@@ -68,7 +68,7 @@ export class SketchApp extends Application {
     this._drawTime = 0; // Time of last update. Used in limiting the number of points per second
     this.pastHistory = []; // List with all past operation. Maybe bound it to a max size?
     this.futureHistory = []; // List with all the undone operations. The name is a bit of an oxymoron
-
+    this.previewCircle = undefined; // The circle used for previewing
     // Colors
     this.currentColor = this.sketchSettings.colors[0];
 
@@ -137,6 +137,7 @@ export class SketchApp extends Application {
     $svgContainer.on('pointerdown', (ev) => this.handlePointerDown(ev));
     $svgContainer.on('pointermove', (ev) => this.handlePointerMove(ev));
     $svgContainer.on('pointerup', (ev) => this.handlePointerUp(ev));
+    $svgContainer.on('pointerleave', (ev) => this.handlePointerLeave(ev));
     $svgContainer.on('wheel', (event) => {
       // deltaY obviously records vertical scroll, deltaX and deltaZ exist too.
       // this condition makes sure it's vertical scrolling that happened
@@ -144,12 +145,13 @@ export class SketchApp extends Application {
         let strokeSize = this._sketchSettings.strokeOptions.size;
 
         if (event.originalEvent.deltaY < 0) {
-          strokeSize += 1;
+          strokeSize += 4;
         } else {
-          strokeSize -= 1;
+          strokeSize -= 4;
         }
         strokeSize = Math.clamped(strokeSize, 4, 100);
         this.updateSketchSettings({ 'strokeOptions.size': strokeSize });
+        this._preview(event);
       }
     });
 
@@ -203,9 +205,21 @@ export class SketchApp extends Application {
 
     if (ev.buttons === 1) {
       this._draw(ev, false);
+      this._removePreview();
     } else if (ev.buttons === 2) {
       this._erase(ev);
+      this._removePreview();
+    } else {
+      this._preview(ev);
     }
+  }
+
+  /**
+   * Pointer LEAVE event
+   * @param {MouseEvent} _ev
+   */
+  handlePointerLeave(_ev) {
+    this._removePreview();
   }
 
   /**
@@ -241,6 +255,30 @@ export class SketchApp extends Application {
    */
   getSvgPathFromCurrentMousePath() {
     return getSvgPathFromStroke(getStroke(this.currentMousePath, this.sketchSettings.strokeOptions));
+  }
+
+  /**
+   * Previews what will be drawn by drawing a circle using the settings
+   * @param ev
+   */
+  _preview(ev) {
+    this.previewCircle = this.previewCircle ?? this.svg.circle();
+    const pos = this._getPosition(ev);
+    this.previewCircle.attr({
+      fill: this.currentColor,
+      cx: pos.x,
+      cy: pos.y,
+      r: this._sketchSettings.strokeOptions.size / 2,
+    });
+  }
+
+  /**
+   * Removes the preview circle
+   * @private
+   */
+  _removePreview() {
+    this.previewCircle?.remove();
+    this.previewCircle = undefined;
   }
 
   /**
@@ -324,6 +362,7 @@ export class SketchApp extends Application {
     const source = this.constructor.storageSource;
     const path = this.constructor.path;
     const name = new Date().toISOString().slice(0, 19).replace(/:/g, '') + '.svg';
+    this._removePreview();
     const file = getFileFromSvgEl(this.svg.node, name);
 
     // Create folder if not exists
@@ -339,7 +378,7 @@ export class SketchApp extends Application {
     // If success, then create the tile
     if (createResponse.status !== 'success') return;
     await createTile(createResponse.path);
-    this.close();
+    await this.close();
   }
 
   /**
