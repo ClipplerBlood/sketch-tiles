@@ -1,6 +1,7 @@
 import { createTile, getFileFromSvgEl, getSvgPathFromStroke } from '../utils.js';
 import { getStroke } from 'perfect-freehand';
 import { SVG } from '@svgdotjs/svg.js';
+import { SketchAppConfiguration } from './configuration-dialog.js';
 
 export class SketchApp extends Application {
   static get defaultOptions() {
@@ -46,10 +47,10 @@ export class SketchApp extends Application {
     return this._sketchSettings;
   }
 
-  updateSketchSettings(changes, options = { store: false }) {
+  async updateSketchSettings(changes, options = { store: false }) {
     this._sketchSettings = mergeObject(this._sketchSettings, changes);
     if (options?.store) {
-      game.settings.set('sketch-tiles', 'sketchOptions', this._sketchSettings);
+      return game.settings.set('sketch-tiles', 'sketchOptions', this._sketchSettings);
     }
   }
 
@@ -119,6 +120,12 @@ export class SketchApp extends Application {
         class: 'upload-sketch',
         onclick: () => this._upload(),
       },
+      {
+        label: '',
+        icon: 'fa-solid fa-sliders',
+        class: 'configure-sketch',
+        onclick: () => SketchAppConfiguration.create(this),
+      },
     );
     return buttons;
   }
@@ -155,17 +162,8 @@ export class SketchApp extends Application {
       }
     });
 
-    // Override the color button
-    const colorPicker = this.element.find('.sketch-color-picker');
-    colorPicker.html(
-      this.sketchSettings.colors
-        .map((c) => {
-          const selected = c === this.currentColor ? 'selected' : '';
-          return `<div class="sketch-color ${selected}" style="background-color: ${c}"></div>`;
-        })
-        .join('\n'),
-    );
-    colorPicker.find('>:first-child').addClass('selected');
+    // Render the palette
+    this.renderPalette();
   }
 
   /**
@@ -395,5 +393,20 @@ export class SketchApp extends Application {
     // Toggle the selected class for UX purposes
     t.parent().children().removeClass('selected');
     t.addClass('selected');
+  }
+
+  renderPalette() {
+    // Override the color button
+    console.log(this);
+    const colorPicker = this.element.find('.sketch-color-picker');
+    colorPicker.html(
+      this.sketchSettings.colors
+        .map((c) => {
+          const selected = c === this.currentColor ? 'selected' : '';
+          return `<div class="sketch-color ${selected}" style="background-color: ${c}"></div>`;
+        })
+        .join('\n'),
+    );
+    colorPicker.find('>:first-child').addClass('selected');
   }
 }

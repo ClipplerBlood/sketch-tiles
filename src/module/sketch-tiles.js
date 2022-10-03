@@ -1,4 +1,4 @@
-import { registerSettings } from './settings.js';
+import { hardReset, registerSettings } from './settings.js';
 import { preloadTemplates } from './preloadTemplates.js';
 import { SketchApp } from './apps/sketch-app.js';
 
@@ -7,6 +7,9 @@ Hooks.once('init', async () => {
   console.log('sketch-tiles | Initializing sketch-tiles');
 
   // Assign custom classes and constants here
+  game.sketchTiles = {
+    hardReset: hardReset,
+  };
 
   registerSettings();
   await preloadTemplates();

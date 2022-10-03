@@ -1,0 +1,71 @@
+<form class="flexcol" action="" autocomplete="off">
+
+  {{log this}}
+
+  <nav class="sheet-tabs tabs" data-group="main">
+    <a class="item" data-tab="colors"><i class="fa-solid fa-palette"></i> {{localize "SKETCHTILES.colors"}}</a>
+    <a class="item" data-tab="strokeOptions"><i class="fa-sharp fa-solid fa-paintbrush-pencil"></i> {{localize "SKETCHTILES.strokeOptions"}}
+    </a>
+  </nav>
+
+  <div class="tab" data-group="main" data-tab="colors">
+    <fieldset>
+      <legend>{{localize "DRAWING.StrokeColor"}}</legend>
+      {{#each sketchSettings.colors as |color index|}}
+        <div class="form-group">
+          {{colorPicker name=(concat "colors." index) value=color}}
+        </div>
+      {{/each}}
+    </fieldset>
+
+    <fieldset>
+      <legend>{{localize "SCENES.BackgroundColor"}}</legend>
+      <div class="form-group">
+        {{colorPicker name="backgroundColor" value=sketchSettings.backgroundColor}}
+      </div>
+    </fieldset>
+  </div>
+
+  <div class="tab" data-group="main" data-tab="strokeOptions">
+    {{#with sketchSettings.strokeOptions}}
+      <div class="form-group">
+        <label>{{localize "SKETCHTILES.size"}}</label>
+        <input type="number" min="4" max="100" value="{{this.size}}" name="strokeOptions.size">
+      </div>
+      <div class="form-group">
+        <label>{{localize "SKETCHTILES.thinning"}}</label>
+        <input type="number" min="0" max="1" step=".01" value="{{this.thinning}}" name="strokeOptions.thinning">
+      </div>
+      <div class="form-group">
+        <label>{{localize "SKETCHTILES.smoothing"}}</label>
+        <input type="number" min="0" max="1" step=".01" value="{{this.smoothing}}" name="strokeOptions.smoothing">
+      </div>
+      <div class="form-group">
+        <label>{{localize "SKETCHTILES.streamline"}}</label>
+        <input type="number" min="0" max="1" step=".01" value="{{this.streamline}}" name="strokeOptions.streamline">
+      </div>
+      <div class="form-group">
+        <label>{{localize "SKETCHTILES.startTaper"}}</label>
+        <input type="number" min="0" max="100" value="{{this.start.taper}}" name="strokeOptions.start.taper">
+      </div>
+      <div class="form-group">
+        <label>{{localize "SKETCHTILES.endTaper"}}</label>
+        <input type="number" min="0" max="100" value="{{this.end.taper}}" name="strokeOptions.end.taper">
+      </div>
+
+    {{/with}}
+  </div>
+
+
+  <footer class="sheet-footer flexrow">
+    <button type="button" data-action="save" data-default="false">
+      <i class="fa-solid fa-check"></i> {{localize "SETTINGS.Save"}}
+    </button>
+    <button type="button" data-action="save" data-default="true">
+      <i class="far fa-save"></i> {{localize "DRAWING.SubmitDefault"}}
+    </button>
+    <button type="button" data-action="reset">
+      <i class="fas fa-undo"></i> {{localize "SETTINGS.Reset"}}
+    </button>
+  </footer>
+</form>

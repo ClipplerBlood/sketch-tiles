@@ -1,1 +1,16 @@
-{}
+{
+  "SKETCHTILES": {
+    "colors": "Colors",
+    "strokeColors": "Stroke Colors",
+    "background": "Background",
+    "strokeOptions": "Stroke",
+    "size": "Size",
+    "thinning": "Thinning",
+    "smoothing": "Smoothing",
+    "streamline": "Streamline",
+    "startTaper": "Start Taper",
+    "endTaper": "End Taper",
+    "apply": "Apply",
+    "settings": ""
+  }
+}
