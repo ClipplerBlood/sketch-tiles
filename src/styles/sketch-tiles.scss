@@ -3,12 +3,12 @@
     width: 100%;
     height: 100%;
     position: relative;
+    border: 4px solid #202020;
   }
 
   svg {
     width: 100%;
     height: 100%;
-    background-color: #ffffff;
     touch-action: none;
   }
 
@@ -16,8 +16,17 @@
     padding: 0;
     overflow: hidden;
     position: relative;
+    background: #fff;
+    backdrop-filter: blur(5px);
   }
 
+  header {
+    border-bottom: none !important;
+    background: #202020;
+    border-top-right-radius: 5px;
+    border-top-left-radius: 5px;
+    color: #e9e9e9;
+  }
   .sketch-color-picker {
     display: flex;
     flex-direction: row;
