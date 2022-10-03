@@ -11,14 +11,38 @@
     background-color: #ffffff;
     touch-action: none;
   }
+
   .window-content {
     padding: 0;
     overflow: hidden;
     position: relative;
   }
-  .button-container {
-    position: absolute;
-    top: 0;
-    right: 0;
+
+  .sketch-color-picker {
+    display: flex;
+    flex-direction: row;
+    gap: 2px;
+    align-items: center;
+
+    &:hover {
+      cursor: default !important;
+    }
+
+    & > div {
+      width: 16px;
+      height: 16px;
+      opacity: 0.5;
+      transition: 0.2s ease-in-out;
+      &:hover {
+        cursor: pointer;
+        opacity: 0.8;
+        transition: 0.2s ease-in-out;
+      }
+    }
+
+    .selected {
+      opacity: 1;
+      transition: 0.2s ease-in-out;
+    }
   }
 }

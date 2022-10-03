@@ -1,4 +1,4 @@
-import { createTile, getSvgPathFromStroke, getFileFromSvgEl } from '../utils.js';
+import { createTile, getFileFromSvgEl, getSvgPathFromStroke } from '../utils.js';
 import { getStroke } from 'perfect-freehand';
 import { SVG } from '@svgdotjs/svg.js';
 
@@ -14,7 +14,7 @@ export class SketchApp extends Application {
   }
 
   /**
-   * Create a new SketchTile app, then render it
+   * Create a new SketchApp, then render it
    */
   static async create() {
     const app = new this();
@@ -38,6 +38,22 @@ export class SketchApp extends Application {
   }
 
   /**
+   * The sketch settings
+   * @returns {*}
+   */
+  get sketchSettings() {
+    this._sketchSettings = this._sketchSettings ?? game.settings.get('sketch-tiles', 'sketchOptions');
+    return this._sketchSettings;
+  }
+
+  updateSketchSettings(changes, options = { store: false }) {
+    this._sketchSettings = mergeObject(this._sketchSettings, changes);
+    if (options?.store) {
+      game.settings.set('sketch-tiles', 'sketchOptions', this._sketchSettings);
+    }
+  }
+
+  /**
    * Constructor.
    * It also adds some attributes describing the drawn path and the svg path
    * @param props
@@ -52,6 +68,9 @@ export class SketchApp extends Application {
     this._drawTime = 0; // Time of last update. Used in limiting the number of points per second
     this.pastHistory = []; // List with all past operation. Maybe bound it to a max size?
     this.futureHistory = []; // List with all the undone operations. The name is a bit of an oxymoron
+
+    // Colors
+    this.currentColor = this.sketchSettings.colors[0];
 
     // Register the keydown listener (for ctrl+z and maybe something else)
     this.keyDownListener = (ev) => {
@@ -72,11 +91,11 @@ export class SketchApp extends Application {
 
   /**
    * Close the application and remove the keydown listener
-   * @param options
+   * @param {Object} options
    * @override
    */
-  close(options = {}) {
-    super.close(options);
+  async close(options = {}) {
+    await super.close(options);
     document.removeEventListener('keydown', this.keyDownListener);
   }
 
@@ -87,12 +106,20 @@ export class SketchApp extends Application {
    */
   _getHeaderButtons() {
     let buttons = super._getHeaderButtons();
-    buttons.unshift({
-      label: 'Upload',
-      icon: 'fa-solid fa-up-from-line',
-      class: 'upload-sketch',
-      onclick: () => this._upload(),
-    });
+    buttons.unshift(
+      {
+        label: '',
+        icon: '',
+        class: 'sketch-color-picker',
+        onclick: (ev) => this.onColorPickerClick(ev),
+      },
+      {
+        label: 'Upload',
+        icon: 'fa-solid fa-up-from-line',
+        class: 'upload-sketch',
+        onclick: () => this._upload(),
+      },
+    );
     return buttons;
   }
 
@@ -110,6 +137,33 @@ export class SketchApp extends Application {
     $svgContainer.on('pointerdown', (ev) => this.handlePointerDown(ev));
     $svgContainer.on('pointermove', (ev) => this.handlePointerMove(ev));
     $svgContainer.on('pointerup', (ev) => this.handlePointerUp(ev));
+    $svgContainer.on('wheel', (event) => {
+      // deltaY obviously records vertical scroll, deltaX and deltaZ exist too.
+      // this condition makes sure it's vertical scrolling that happened
+      if (event.originalEvent.deltaY !== 0) {
+        let strokeSize = this._sketchSettings.strokeOptions.size;
+
+        if (event.originalEvent.deltaY < 0) {
+          strokeSize += 1;
+        } else {
+          strokeSize -= 1;
+        }
+        strokeSize = Math.clamped(strokeSize, 4, 100);
+        this.updateSketchSettings({ 'strokeOptions.size': strokeSize });
+      }
+    });
+
+    // Override the color button
+    const colorPicker = this.element.find('.sketch-color-picker');
+    colorPicker.html(
+      this.sketchSettings.colors
+        .map((c) => {
+          const selected = c === this.currentColor ? 'selected' : '';
+          return `<div class="sketch-color ${selected}" style="background-color: ${c}"></div>`;
+        })
+        .join('\n'),
+    );
+    colorPicker.find('>:first-child').addClass('selected');
   }
 
   /**
@@ -171,13 +225,22 @@ export class SketchApp extends Application {
       // Add the point to a new drawn path and set the current svg path
       this.currentMousePath = [currentPoint];
       this.currentSvgPath = this.svg.path({
-        d: getSvgPathFromStroke(getStroke(this.currentMousePath, _strokeOptions)),
+        d: this.getSvgPathFromCurrentMousePath(),
+        fill: this.currentColor,
       });
-    } else {
+    } else if (this.currentMousePath != null) {
       // Add the point to the last drawn path and update the current svg path
       this.currentMousePath.push(currentPoint);
-      this.currentSvgPath.plot(getSvgPathFromStroke(getStroke(this.currentMousePath, _strokeOptions)));
+      this.currentSvgPath.plot(this.getSvgPathFromCurrentMousePath());
     }
+  }
+
+  /**
+   * Returns the SVG path from the current mouse path
+   * @returns {string|*}
+   */
+  getSvgPathFromCurrentMousePath() {
+    return getSvgPathFromStroke(getStroke(this.currentMousePath, this.sketchSettings.strokeOptions));
   }
 
   /**
@@ -213,7 +276,7 @@ export class SketchApp extends Application {
    * @private
    */
   _getPosition(ev) {
-    var rect = ev.currentTarget.getBoundingClientRect();
+    const rect = ev.currentTarget.getBoundingClientRect();
     return {
       x: Math.round(ev.clientX - rect.left),
       y: Math.round(ev.clientY - rect.top),
@@ -278,22 +341,20 @@ export class SketchApp extends Application {
     await createTile(createResponse.path);
     this.close();
   }
-}
 
-const _strokeOptions = {
-  size: 12,
-  thinning: 0.5,
-  smoothing: 0.5,
-  streamline: 0.5,
-  easing: (t) => t,
-  start: {
-    taper: 0,
-    easing: (t) => t,
-    cap: true,
-  },
-  end: {
-    taper: 0,
-    easing: (t) => t,
-    cap: true,
-  },
-};
+  /**
+   * Handles the click of the color picker, setting the current selected color
+   * @param ev
+   */
+  onColorPickerClick(ev) {
+    const t = $(ev.target);
+    if (!t.hasClass('sketch-color')) return;
+
+    // Get the color from the bg (alternatively could be done using indices)
+    this.currentColor = t.css('backgroundColor');
+
+    // Toggle the selected class for UX purposes
+    t.parent().children().removeClass('selected');
+    t.addClass('selected');
+  }
+}
