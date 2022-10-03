@@ -71,14 +71,27 @@ export async function createTile(texturePath, svgEl) {
     width: bRect.width,
     height: bRect.height,
     'texture.src': texturePath,
+    'flags.sketch-tiles.isSketch': true,
   });
 
   // Create the tile, and if successful activate the TilesLayer, select the tile and close this app.
   const createdTiles = await game.scenes.viewed.createEmbeddedDocuments('Tile', [data]);
   if (createdTiles.length > 0) {
-    const tilesLayer = canvas.layers.find((l) => l instanceof TilesLayer);
-    tilesLayer.activate();
-    tilesLayer.placeables.find((p) => p.document.id === createdTiles[0].id).control();
+    game.canvas.tiles.activate();
+    game.canvas.tiles.placeables.find((p) => p.document.id === createdTiles[0].id).control();
   }
   return createdTiles;
+}
+
+/**
+ * Edits all tiles present in the TilesLayer with textures src that share the same oldPath, with the new src paths
+ * @param newPath
+ * @param oldPath
+ */
+export function editAllTiles(newPath, oldPath) {
+  const updateData = { 'texture.src': newPath };
+  game.canvas.tiles.tiles
+    .map((c) => c.document)
+    .filter((td) => td.texture.src === oldPath)
+    .forEach((td) => td.update(updateData));
 }

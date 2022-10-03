@@ -1,4 +1,4 @@
-import { createTile, getFileFromSvgEl, getSvgPathFromStroke } from '../utils.js';
+import { createTile, editAllTiles, getFileFromSvgEl, getSvgPathFromStroke } from '../utils.js';
 import { getStroke } from 'perfect-freehand';
 import { SVG } from '@svgdotjs/svg.js';
 import { SketchAppConfiguration } from './configuration-dialog.js';
@@ -18,9 +18,13 @@ export class SketchApp extends Application {
   /**
    * Create a new SketchApp, then render it
    */
-  static async create() {
+  static async create(options = { svgFilePath: undefined, isEdit: false }) {
     const app = new this();
-    app.render(true);
+    await app.render(true);
+
+    if (options.svgFilePath) await app.loadSVG(options.svgFilePath);
+    if (options.isEdit) app.isEdit = true;
+    if (options.isEdit && options.svgFilePath) app.sourceSvgPath = options.svgFilePath;
   }
 
   /**
@@ -71,8 +75,11 @@ export class SketchApp extends Application {
     this.pastHistory = []; // List with all past operation. Maybe bound it to a max size?
     this.futureHistory = []; // List with all the undone operations. The name is a bit of an oxymoron
     this.previewCircle = undefined; // The circle used for previewing
-    // Colors
-    this.currentColor = this.sketchSettings.colors[0];
+    this.currentColor = this.sketchSettings.colors[0]; // The current color
+
+    // Editing stuff
+    this.isEdit = false; // If this app has been opened for editing an existing tile
+    this.sourceSvgPath = undefined; // The original texture path for the edited tile
 
     // Register the keydown listener (for ctrl+z and maybe something else)
     this.keyDownListener = (ev) => {
@@ -226,6 +233,7 @@ export class SketchApp extends Application {
       this._preview(_ev);
     }
   }
+
   /**
    * Draws the SVG incrementally.
    * This means that only the current drawn path is converted to SVG,
@@ -379,9 +387,13 @@ export class SketchApp extends Application {
     // Create the file in the folder
     const createResponse = await FilePicker.upload(source, path, file);
 
-    // If success, then create the tile
+    // If success, then create the tile. If editing, change the tiles src
+    // NOTE: it's not possible to simply reupload the file at the same path and trigger a tile reload
+    // due to foundry's texture caching. Simple alternative used: create new file and modify textures.
+    // TODO: better alternative: custom Tile class that doesn't use caching
     if (createResponse.status !== 'success') return;
-    await createTile(createResponse.path, this.svg.node);
+    if (!this.isEdit) await createTile(createResponse.path, this.svg.node);
+    else editAllTiles(createResponse.path, this.sourceSvgPath);
     await this.close();
   }
 
@@ -448,5 +460,25 @@ export class SketchApp extends Application {
       this.element.find('.header-button.close').show();
     }
     super.setPosition({ left, top, width, height, scale });
+  }
+
+  /**
+   * Load an svg into the current svg
+   * @param {string} svgFilePath
+   * @returns {Promise<void>}
+   */
+  async loadSVG(svgFilePath) {
+    // Get the response
+    if (!svgFilePath.endsWith('.svg')) return; // TODO: better errors
+    const response = await fetch(svgFilePath);
+    if (!response.ok) return; // TODO: better errors
+
+    // Parse the response text, making it into a DOM element for content extraction
+    const svgText = await response.text();
+    const svgData = new DOMParser().parseFromString(svgText, 'text/html').body.childNodes[0];
+    const innerSvg = svgData.innerHTML;
+
+    // Inject the current svg with the fetched innerSvg
+    this.svg.node.insertAdjacentHTML('beforeend', innerSvg);
   }
 }
