@@ -72,16 +72,18 @@ export class SketchAppConfiguration extends FormApplication {
     Object.entries(formData.colors).forEach(([key, value]) => (colors[key] = value));
     formData.colors = colors;
 
-    // Update, close and render palette
+    // Update, close and update render app html
     this.sketchApp.updateSketchSettings(formData, { store: isSetDefault });
     this.close();
     this.sketchApp.renderPalette();
+    this.sketchApp.setSvgBackgroundColor();
   }
 
   _resetDefaults() {
     this.sketchApp.updateSketchSettings(DEFAULT_SKETCH_SETTINGS, { store: true });
     this.close();
     this.sketchApp.renderPalette();
+    this.sketchApp.setSvgBackgroundColor();
   }
 
   // eslint-disable-next-line no-unused-vars

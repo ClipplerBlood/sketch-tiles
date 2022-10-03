@@ -164,6 +164,8 @@ export class SketchApp extends Application {
 
     // Render the palette
     this.renderPalette();
+    // Set the background color
+    this.setSvgBackgroundColor();
   }
 
   /**
@@ -395,9 +397,10 @@ export class SketchApp extends Application {
     t.addClass('selected');
   }
 
+  /**
+   * Renders the palette as a header button
+   */
   renderPalette() {
-    // Override the color button
-    console.log(this);
     const colorPicker = this.element.find('.sketch-color-picker');
     colorPicker.html(
       this.sketchSettings.colors
@@ -408,5 +411,14 @@ export class SketchApp extends Application {
         .join('\n'),
     );
     colorPicker.find('>:first-child').addClass('selected');
+  }
+
+  /**
+   * Sets the SVG Background
+   * @param {string} bg optional color (#HEX)
+   */
+  setSvgBackgroundColor(bg = undefined) {
+    bg = bg ?? this.sketchSettings.backgroundColor;
+    this.svg.css({ 'background-color': bg });
   }
 }
