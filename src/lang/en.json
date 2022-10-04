@@ -8,10 +8,26 @@
     "thinning": "Thinning",
     "smoothing": "Smoothing",
     "streamline": "Streamline",
+    "simulatePressure": "Simulate Pressure",
     "startTaper": "Start Taper",
     "endTaper": "End Taper",
     "apply": "Apply",
-    "settings": "",
-    "editSketch": "Edit Sketch Tile"
+    "editSketch": "Edit Sketch Tile",
+    "other": "Other",
+    "importSvg": "Import SVG",
+    "pollingRate": "Polling Rate",
+    "notifications": {
+      "fileNotSvg": "The imported file must be an SVG"
+    },
+    "hints": {
+      "thinning": "The effect of pressure on the stroke's size.",
+      "smoothing": "How much to soften the stroke's edges.",
+      "streamline": "How much to streamline the stroke.",
+      "simulatePressure": "Whether to simulate pressure based on velocity.",
+      "startTaper": "Tapering options for the start of the line.",
+      "endTaper": "Tapering options for the end of the line.",
+      "pollingRate": "How many times per second a point can be added to a stroke.",
+      "importSvg": "Path to an SVG to be added to the sketch."
+    }
   }
 }

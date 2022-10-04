@@ -1,11 +1,14 @@
 export const DEFAULT_SKETCH_SETTINGS = {
   colors: ['#000000', '#C02025', '#EAC11D', '#3C91E6', '#50C878', '#BCBCBC'],
   backgroundColor: null,
+  pollingRate: 60,
+  backgroundSvg: null,
   strokeOptions: {
     size: 12,
     thinning: 0.5,
     smoothing: 0.5,
     streamline: 0.5,
+    simulatePressure: true,
     easing: (t) => t,
     start: {
       taper: 0,

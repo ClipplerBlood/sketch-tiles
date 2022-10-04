@@ -4,8 +4,11 @@
 
   <nav class="sheet-tabs tabs" data-group="main">
     <a class="item" data-tab="colors"><i class="fa-solid fa-palette"></i> {{localize "SKETCHTILES.colors"}}</a>
-    <a class="item" data-tab="strokeOptions"><i class="fa-sharp fa-solid fa-paintbrush-pencil"></i> {{localize "SKETCHTILES.strokeOptions"}}
-    </a>
+    <a class="item" data-tab="strokeOptions"><i class="fa-sharp fa-solid fa-paintbrush-pencil"></i> {{localize
+      "SKETCHTILES.strokeOptions"}}
+      <a class="item" data-tab="otherOptions"><i class="fa-solid fa-square-sliders"></i> {{localize
+        "SKETCHTILES.other"}}
+      </a>
   </nav>
 
   <div class="tab" data-group="main" data-tab="colors">
@@ -13,47 +16,100 @@
       <legend>{{localize "DRAWING.StrokeColor"}}</legend>
       {{#each sketchSettings.colors as |color index|}}
         <div class="form-group">
-          {{colorPicker name=(concat "colors." index) value=color}}
+          <div class="form-fields">
+            {{colorPicker name=(concat "colors." index) value=color}}
+          </div>
         </div>
       {{/each}}
     </fieldset>
 
-    <fieldset>
+    <fieldset style="margin-bottom: 4px">
       <legend>{{localize "SCENES.BackgroundColor"}}</legend>
       <div class="form-group">
-        {{colorPicker name="backgroundColor" value=sketchSettings.backgroundColor}}
+        <div class="form-fields">
+          {{colorPicker name="backgroundColor" value=sketchSettings.backgroundColor}}
+        </div>
       </div>
     </fieldset>
   </div>
 
   <div class="tab" data-group="main" data-tab="strokeOptions">
     {{#with sketchSettings.strokeOptions}}
-      <div class="form-group">
+
+      <div class="form-group slim">
         <label>{{localize "SKETCHTILES.size"}}</label>
-        <input type="number" min="4" max="100" value="{{this.size}}" name="strokeOptions.size">
-      </div>
-      <div class="form-group">
-        <label>{{localize "SKETCHTILES.thinning"}}</label>
-        <input type="number" min="0" max="1" step=".01" value="{{this.thinning}}" name="strokeOptions.thinning">
-      </div>
-      <div class="form-group">
-        <label>{{localize "SKETCHTILES.smoothing"}}</label>
-        <input type="number" min="0" max="1" step=".01" value="{{this.smoothing}}" name="strokeOptions.smoothing">
-      </div>
-      <div class="form-group">
-        <label>{{localize "SKETCHTILES.streamline"}}</label>
-        <input type="number" min="0" max="1" step=".01" value="{{this.streamline}}" name="strokeOptions.streamline">
-      </div>
-      <div class="form-group">
-        <label>{{localize "SKETCHTILES.startTaper"}}</label>
-        <input type="number" min="0" max="100" value="{{this.start.taper}}" name="strokeOptions.start.taper">
-      </div>
-      <div class="form-group">
-        <label>{{localize "SKETCHTILES.endTaper"}}</label>
-        <input type="number" min="0" max="100" value="{{this.end.taper}}" name="strokeOptions.end.taper">
+        <div class="form-fields">
+          <input type="number" min="4" max="100" value="{{this.size}}" name="strokeOptions.size">
+        </div>
       </div>
 
+      <div class="form-group slim">
+        <label>{{localize "SKETCHTILES.thinning"}}</label>
+        <div class="form-fields">
+          <input type="number" min="0" max="1" step=".01" value="{{this.thinning}}" name="strokeOptions.thinning">
+        </div>
+        <p class="hint">{{localize "SKETCHTILES.hints.thinning"}}</p>
+      </div>
+
+      <div class="form-group slim">
+        <label>{{localize "SKETCHTILES.smoothing"}}</label>
+        <div class="form-fields">
+          <input type="number" min="0" max="1" step=".01" value="{{this.smoothing}}" name="strokeOptions.smoothing">
+        </div>
+        <p class="hint">{{localize "SKETCHTILES.hints.smoothing"}}</p>
+      </div>
+
+      <div class="form-group slim">
+        <label>{{localize "SKETCHTILES.streamline"}}</label>
+        <div class="form-fields">
+          <input type="number" min="0" max="1" step=".01" value="{{this.streamline}}" name="strokeOptions.streamline">
+        </div>
+        <p class="hint">{{localize "SKETCHTILES.hints.streamline"}}</p>
+      </div>
+
+      <div class="form-group slim">
+        <label>{{localize "SKETCHTILES.simulatePressure"}}</label>
+        <div class="form-fields">
+          <input type="checkbox" {{checked this.simulatePressure}} name="strokeOptions.simulatePressure">
+        </div>
+        <p class="hint">{{localize "SKETCHTILES.hints.simulatePressure"}}</p>
+      </div>
+
+      <div class="form-group slim">
+        <label>{{localize "SKETCHTILES.startTaper"}}</label>
+        <div class="form-fields">
+          <input type="number" min="0" max="100" value="{{this.start.taper}}" name="strokeOptions.start.taper">
+        </div>
+        <p class="hint">{{localize "SKETCHTILES.hints.startTaper"}}</p>
+      </div>
+
+      <div class="form-group slim">
+        <label>{{localize "SKETCHTILES.endTaper"}}</label>
+        <div class="form-fields">
+          <input type="number" min="0" max="100" value="{{this.end.taper}}" name="strokeOptions.end.taper">
+        </div>
+        <p class="hint">{{localize "SKETCHTILES.hints.endTaper"}}</p>
+      </div>
     {{/with}}
+  </div>
+
+  <div class="tab" data-group="main" data-tab="otherOptions">
+    <div class="form-group">
+      <label>{{localize "SKETCHTILES.importSvg"}}</label>
+      <div class="form-fields">
+        <input class="image" type="text" name="importSvg" placeholder="path/image.png" value="" />
+        {{filePicker target="importSvg" type="image"}}
+      </div>
+      <p class="hint">{{localize "SKETCHTILES.hints.importSvg"}}</p>
+    </div>
+
+    <div class="form-group slim">
+      <label>{{localize "SKETCHTILES.pollingRate"}}</label>
+      <div class="form-fields">
+        <input type="number" min="15" value="{{sketchSettings.pollingRate}}" name="pollingRate">
+      </div>
+      <p class="hint">{{localize "SKETCHTILES.hints.pollingRate"}}</p>
+    </div>
   </div>
 
 

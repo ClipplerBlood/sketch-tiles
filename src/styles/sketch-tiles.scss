@@ -43,6 +43,8 @@
       height: 16px;
       opacity: 0.5;
       transition: 0.2s ease-in-out;
+      border-radius: 2px;
+
       &:hover {
         cursor: pointer;
         opacity: 0.8;

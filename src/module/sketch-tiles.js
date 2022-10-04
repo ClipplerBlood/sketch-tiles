@@ -48,5 +48,6 @@ Hooks.on('renderTileHUD', (tileHud, elementHud, options) => {
   elementHud.find('.col.right').append(editButton);
 
   // Add listener to button that renders a SketchApp with the current texture
-  editButton.click(() => SketchApp.create({ svgFilePath: textureSrc, isEdit: true }));
+
+  editButton.click(() => SketchApp.create({ svgFilePath: tileHud.object.document.texture.src, isEdit: true }));
 });

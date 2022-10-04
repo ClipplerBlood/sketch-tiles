@@ -24,7 +24,9 @@ export class SketchApp extends Application {
 
     if (options.svgFilePath) await app.loadSVG(options.svgFilePath);
     if (options.isEdit) app.isEdit = true;
+
     if (options.isEdit && options.svgFilePath) app.sourceSvgPath = options.svgFilePath;
+    else if (app.sketchSettings.backgroundSvg) app.loadSVG(app.sketchSettings.backgroundSvg);
   }
 
   /**
@@ -193,7 +195,7 @@ export class SketchApp extends Application {
   handlePointerMove(ev) {
     // Limit the number of calls per sec
     const now = Date.now();
-    if (now - this._drawTime < 1000 / 60) return;
+    if (now - this._drawTime < 1000 / this.sketchSettings.pollingRate) return;
     this._drawTime = now;
 
     if (ev.buttons === 1) {

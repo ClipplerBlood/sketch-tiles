@@ -72,6 +72,19 @@ export class SketchAppConfiguration extends FormApplication {
     Object.entries(formData.colors).forEach(([key, value]) => (colors[key] = value));
     formData.colors = colors;
 
+    // Extract the "importSvg"
+    const importSvgFilePath = formData.importSvg;
+    delete formData.importSvg;
+    if (importSvgFilePath.length > 3) {
+      if (importSvgFilePath.endsWith('.svg')) {
+        if (importSvgFilePath !== this.sketchApp.sketchSettings.backgroundSvg)
+          this.sketchApp.loadSVG(importSvgFilePath);
+        if (isSetDefault) formData.backgroundSvg = importSvgFilePath;
+      } else ui.notifications.warn(i18n('SKETCHTILES.notifications.fileNotSvg'));
+    } else if (isSetDefault) {
+      formData.backgroundSvg = '';
+    }
+
     // Update, close and update render app html
     this.sketchApp.updateSketchSettings(formData, { store: isSetDefault });
     this.close();
