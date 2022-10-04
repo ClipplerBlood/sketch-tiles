@@ -1,7 +1,7 @@
 {
   "id": "sketch-tiles",
   "title": "Sketch Tiles",
-  "description": "<description of the package>",
+  "description": "Quickly create hand drawn tiles into your game!",
   "authors": [
     {
       "name": "ClipplerBlood",
@@ -9,10 +9,10 @@
     }
   ],
   "url": "This is auto replaced",
-  "license": "<please choose an appropriate license. https://choosealicense.com/ is a great place to get more information if you are unsure>",
-  "readme": "<optionally the URL to your readme>",
-  "bugs": "<optionally the URL to your issue list>",
-  "changelog": "<optionally the URL to your changelog>",
+  "license": "https://github.com/ClipplerBlood/sketch-tiles/blob/master/LICENSE",
+  "readme": "https://github.com/ClipplerBlood/sketch-tiles/blob/master/README.md",
+  "bugs": "https://github.com/ClipplerBlood/sketch-tiles/issues",
+  "changelog": "https://github.com/ClipplerBlood/sketch-tiles/blob/master/CHANGELOG.md",
   "version": "This is auto replaced",
   "compatibility": {
     "minimum": "10",
