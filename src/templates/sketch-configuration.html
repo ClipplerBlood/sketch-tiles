@@ -97,7 +97,7 @@
     <div class="form-group">
       <label>{{localize "SKETCHTILES.importSvg"}}</label>
       <div class="form-fields">
-        <input class="image" type="text" name="importSvg" placeholder="path/image.png" value="" />
+        <input class="image" type="text" name="importSvg" placeholder="path/image.png" value="{{sketchSettings.backgroundSvg}}" />
         {{filePicker target="importSvg" type="image"}}
       </div>
       <p class="hint">{{localize "SKETCHTILES.hints.importSvg"}}</p>
