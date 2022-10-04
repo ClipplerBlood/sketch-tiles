@@ -2,7 +2,7 @@
   Sketch Tiles
 </h1>
 <p align="center">
-  <img src=".github/images/logo.png" width="720" />
+  <img src=".github/images/logo-red-outline.png" width="720" />
 </p>
 <p align="center">
   Quickly sketch your ideas into the game!<br>
@@ -47,7 +47,23 @@ If you want to customize the sketch settings (like colors, background and many m
 - Right Click: Eraser
 
 
-### Examples
+## Examples
+Disclaimer: the following sketches have been made by a terrible sketcher, with a mouse and in 5 minutes
+
+<h3 align="center">Index Cards</h3>
+<p align="center">
+  <img src=".github/images/index-cards.png" width=720 />
+</p>
+
+<h3 align="center">Dungeon Tiles</h3>
+<p align="center">
+  <img src=".github/images/dungeon-tiles-1.png" width=720 />
+  <img src=".github/images/dungeon-tiles-2.png" width=320 />
+</p>
+
+<h3 align="center">Overland map</h3>
+
+
 - Quickly make tilable dungeon rooms
 - Add trees or other decorations
 - Use it for traps or other "GM notes"
