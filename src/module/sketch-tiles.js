@@ -7,9 +7,10 @@ import { i18n } from './utils.js';
 Hooks.once('init', async () => {
   console.log('sketch-tiles | Initializing sketch-tiles');
 
-  // Assign custom classes and constants here
+  // Expose some api
   game.sketchTiles = {
     hardReset: hardReset,
+    create: SketchApp.create,
   };
 
   registerSettings();
@@ -49,6 +50,8 @@ Hooks.on('renderTileHUD', (tileHud, elementHud, options) => {
   elementHud.find('.col.right').append(editButton);
 
   // Add listener to button that renders a SketchApp with the current texture
-
   editButton.click(() => SketchApp.create({ svgFilePath: tileHud.object.document.texture.src, isEdit: true }));
 });
+
+// Add a hook to allow external calling
+Hooks.on('requestSketchTile', () => SketchApp.create());
