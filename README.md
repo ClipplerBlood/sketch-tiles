@@ -8,10 +8,18 @@
   Quickly sketch your ideas into the game!<br>
   A super light and system agnostic FoundryVTT Module.
 </p>
+
+<!--
 <div style="display: flex; flex-direction: row; align-items: center; gap: 8px; justify-content: right" >
   <div style="height: fit-content; top: -5px; position: relative">Like the project?</div>
   <a href='https://ko-fi.com/supportkofi' target='_blank'><img height='35' style='border:0px;height:46px;' src='https://az743702.vo.msecnd.net/cdn/kofi3.png?v=0' border='0' alt='Buy Me a Coffee at ko-fi.com' /></a>
 </div>
+-->
+
+<hr>
+If you enjoy this module, consider supporting it! 
+
+![Ko-Fi](https://img.shields.io/badge/Ko--fi-F16061?style=for-the-badge&logo=ko-fi&logoColor=white)
 
 ## Why this module
 Have you ever wanted to quickly sketch something pretty on the board? Or place some hand drawn dungeon tiles?
@@ -32,6 +40,11 @@ A window with your sketch will open and then when you upload it again all tiles 
 If you want to customize the sketch settings (like colors, background and many more), you can click the settings button in the sketch tiles window.
 
 ## Examples
+- Quickly make tilable dungeon rooms
+- Add trees or other decorations
+- Use it for traps or other "GM notes"
+- Place Index Cards
+
 
 ## How it works
 All Sketch Tiles are SVG images. When uploaded, they are saved in `<FoundryData>/worlds/<world>/SketchTiles`. Then a new Tile is created with this file as texture.
