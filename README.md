@@ -48,12 +48,8 @@ If you want to customize the sketch settings (like colors, background and many m
 
 
 ## Examples
-Disclaimer: the following sketches have been made by a terrible sketcher, with a mouse and in 5 minutes
-
-<h3 align="center">Index Cards</h3>
-<p align="center">
-  <img src=".github/images/index-cards.png" width=720 />
-</p>
+Disclaimer: the following sketches have been made by a terrible sketcher, with a mouse and in 5 minutes.
+If you want, send me your cool drawings on discord at ClipplerBlood#8146
 
 <h3 align="center">Dungeon Tiles</h3>
 <p align="center">
@@ -62,12 +58,15 @@ Disclaimer: the following sketches have been made by a terrible sketcher, with a
 </p>
 
 <h3 align="center">Overland map</h3>
+<p align="center">
+  <img src=".github/images/overland.png" width=720 />
+  Each element (tree, rocks, river) is a tile!
+</p>
 
-
-- Quickly make tilable dungeon rooms
-- Add trees or other decorations
-- Use it for traps or other "GM notes"
-- Place Index Cards
+<h3 align="center">Index Cards</h3>
+<p align="center">
+  <img src=".github/images/index-cards.png" width=720 />
+</p>
 
 
 ## How it works
@@ -77,6 +76,18 @@ The created tile dimensions are the same of the Sketch Tile window, so if you wa
 you can adjust the window size before uploading.
 
 Note that in Foundry it is not possible to delete the files from the client (for sensible security reasons), so every once in a while you may want to delete your unused sketches to save a bit of storage.
+
+## Issues and feedback
+You can report issues directly on [github](https://github.com/ClipplerBlood/sketch-tiles/issues). If you have any questions or want to propose some features, feel free to message me on discord at ClipplerBlood#8146.
+
+## License and acknowledgements
+See [LICENSE](https://github.com/ClipplerBlood/sketch-tiles/blob/master/LICENSE) for further info.
+
+Libraries used:
+- [perfect-freehand](https://github.com/steveruizok/perfect-freehand)
+- [SVG.js](https://svgjs.dev/docs/3.0/)
+
+Thanks to Hertzila#5805 for the module name! And thanks to all the awesome foundry devs in the community for the feedback and help!
 
 
 
