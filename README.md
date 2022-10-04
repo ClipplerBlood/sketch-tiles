@@ -17,7 +17,7 @@
 -->
 
 <hr>
-If you enjoy this module, consider supporting it! 
+If you enjoy this module, consider supporting it!
 
 ![Ko-Fi](https://img.shields.io/badge/Ko--fi-F16061?style=for-the-badge&logo=ko-fi&logoColor=white)
 
@@ -39,7 +39,15 @@ A window with your sketch will open and then when you upload it again all tiles 
 
 If you want to customize the sketch settings (like colors, background and many more), you can click the settings button in the sketch tiles window.
 
-## Examples
+### Controls
+- Ctrl+Z: Undo
+- Ctrl+Y: Redo
+- Scroll Wheel: Change stroke size
+- Left Click: Draw
+- Right Click: Eraser
+
+
+### Examples
 - Quickly make tilable dungeon rooms
 - Add trees or other decorations
 - Use it for traps or other "GM notes"
