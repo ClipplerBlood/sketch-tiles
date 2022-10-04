@@ -22,9 +22,8 @@ export class SketchApp extends Application {
     const app = new this();
     await app.render(true);
 
-    if (options.svgFilePath) await app.loadSVG(options.svgFilePath);
     if (options.isEdit) app.isEdit = true;
-
+    if (options.svgFilePath) await app.loadSVG(options.svgFilePath);
     if (options.isEdit && options.svgFilePath) app.sourceSvgPath = options.svgFilePath;
     else if (app.sketchSettings.backgroundSvg) app.loadSVG(app.sketchSettings.backgroundSvg);
   }
@@ -482,5 +481,12 @@ export class SketchApp extends Application {
 
     // Inject the current svg with the fetched innerSvg
     this.svg.node.insertAdjacentHTML('beforeend', innerSvg);
+    console.log(svgData);
+    // If is edit, resize the application to fit the content
+    if (!this.isEdit) return;
+    this.setPosition({
+      width: parseInt(svgData.getAttribute('width')) + 8,
+      height: parseInt(svgData.getAttribute('height')) + 32,
+    });
   }
 }
