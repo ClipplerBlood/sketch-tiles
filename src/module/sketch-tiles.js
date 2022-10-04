@@ -27,6 +27,7 @@ Hooks.on('getSceneControlButtons', (controls) => {
   const tileControls = controls.find((c) => c.name === 'tiles');
   tileControls.tools.push({
     name: 'Sketch Tiles',
+    title: 'Sketch Tiles',
     icon: 'fa-duotone fa-cards-blank',
     onClick: () => SketchApp.create(),
   });
