@@ -60,6 +60,8 @@ If you want, send me your cool drawings on discord at ClipplerBlood#8146
 <h3 align="center">Overland map</h3>
 <p align="center">
   <img src=".github/images/overland.png" width=720 />
+</p>
+<p align="center">
   Each element (tree, rocks, river) is a tile!
 </p>
 
