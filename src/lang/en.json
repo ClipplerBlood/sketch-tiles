@@ -27,7 +27,9 @@
       "startTaper": "Tapering options for the start of the line.",
       "endTaper": "Tapering options for the end of the line.",
       "pollingRate": "How many times per second a point can be added to a stroke.",
-      "importSvg": "Path to an SVG to be added to the sketch."
+      "importSvg": "Path to an SVG to be added to the sketch.",
+      "donations1": "If you are enjoying this module, consider supporting it!",
+      "donations2": "Offer a Coffee"
     }
   }
 }
