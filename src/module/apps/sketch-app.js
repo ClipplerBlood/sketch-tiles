@@ -481,7 +481,7 @@ export class SketchApp extends Application {
 
     // Inject the current svg with the fetched innerSvg
     this.svg.node.insertAdjacentHTML('beforeend', innerSvg);
-    console.log(svgData);
+
     // If is edit, resize the application to fit the content
     if (!this.isEdit) return;
     this.setPosition({

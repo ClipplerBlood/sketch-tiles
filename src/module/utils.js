@@ -88,10 +88,10 @@ export async function createTile(texturePath, svgEl) {
  * @param newPath
  * @param oldPath
  */
-export function editAllTiles(newPath, oldPath) {
+export async function editAllTiles(newPath, oldPath) {
   const updateData = { 'texture.src': newPath };
-  game.canvas.tiles.tiles
-    .map((c) => c.document)
-    .filter((td) => td.texture.src === oldPath)
-    .forEach((td) => td.update(updateData));
+  const linkedTokenDocs = game.canvas.tiles.tiles.map((c) => c.document).filter((td) => td.texture.src === oldPath);
+  for (const td1 of linkedTokenDocs) {
+    await td1.update(updateData);
+  }
 }
