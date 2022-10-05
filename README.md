@@ -1,6 +1,3 @@
-<h1 align="center">
-  Sketch Tiles
-</h1>
 <p align="center">
   <img src=".github/images/logo-red-outline.png" width="720" />
 </p>
