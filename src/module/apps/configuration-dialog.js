@@ -67,6 +67,9 @@ export class SketchAppConfiguration extends FormApplication {
     form.serializeArray().forEach((i) => (formData[i.name] = i.value));
     formData = expandObject(formData);
 
+    // Handle checkboxes
+    form.find('input[type="checkbox"]')?.each((_, i) => (formData[i.name] = i.checked));
+
     // Convert the colors to an array
     const colors = this.sketchApp.sketchSettings.colors;
     Object.entries(formData.colors).forEach(([key, value]) => (colors[key] = value));

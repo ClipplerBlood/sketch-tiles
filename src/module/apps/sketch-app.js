@@ -376,7 +376,7 @@ export class SketchApp extends Application {
     const path = this.constructor.path;
     const name = new Date().toISOString().slice(0, 19).replace(/:/g, '') + '.svg';
     this._removePreview();
-    const file = getFileFromSvgEl(this.svg.node, name);
+    const file = getFileFromSvgEl(this.svg.node, name, this.sketchSettings.autoCrop);
 
     // Create folder if not exists
     try {
@@ -393,8 +393,8 @@ export class SketchApp extends Application {
     // due to foundry's texture caching. Simple alternative used: create new file and modify textures.
     // TODO: better alternative: custom Tile class that doesn't use caching
     if (createResponse.status !== 'success') return;
-    if (!this.isEdit) await createTile(createResponse.path, this.svg.node);
-    else editAllTiles(createResponse.path, this.sourceSvgPath);
+    if (!this.isEdit) await createTile(createResponse.path, this.svg.node, this.sketchSettings.autoCrop);
+    else editAllTiles(createResponse.path, this.sourceSvgPath, this.svg.node, this.sketchSettings.autoCrop);
     await this.close();
   }
 
@@ -484,9 +484,25 @@ export class SketchApp extends Application {
 
     // If is edit, resize the application to fit the content
     if (!this.isEdit) return;
-    this.setPosition({
-      width: parseInt(svgData.getAttribute('width')) + 8,
-      height: parseInt(svgData.getAttribute('height')) + 32,
-    });
+
+    let viewBox = svgData
+      .getAttribute('viewBox')
+      ?.split(' ')
+      .map((v) => parseInt(v));
+
+    if (viewBox) {
+      const bRect = {
+        x: viewBox[0],
+        y: viewBox[1],
+        width: viewBox[2],
+        height: viewBox[3],
+      };
+      this.setPosition({ width: bRect.width + bRect.x + 8, height: bRect.height + bRect.y + 32 });
+    } else {
+      this.setPosition({
+        width: parseInt(svgData.getAttribute('width')) + 8,
+        height: parseInt(svgData.getAttribute('height')) + 32,
+      });
+    }
   }
 }

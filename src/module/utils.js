@@ -42,15 +42,16 @@ export function getSvgPathFromStroke(stroke) {
  * Converts an SVG HTML ELEMENT into an SVG FILE DATA
  * @param {Element} svgEl
  * @param {string} name
+ * @param {boolean} autoCrop
  * @returns {File}
  */
-export function getFileFromSvgEl(svgEl, name) {
+export function getFileFromSvgEl(svgEl, name, autoCrop) {
   // Retrieve element dimensions
-  const bRect = svgEl.getBoundingClientRect();
+  const bRect = getCroppedDimensions(svgEl, autoCrop);
   svgEl.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
-  svgEl.setAttribute('width', bRect.width);
-  svgEl.setAttribute('height', bRect.height);
-  svgEl.setAttribute('viewBox', `0 0 ${bRect.width} ${bRect.height}`);
+  svgEl.setAttribute('width', bRect.width.toString());
+  svgEl.setAttribute('height', bRect.height.toString());
+  svgEl.setAttribute('viewBox', `${autoCrop ? bRect.x : 0} ${autoCrop ? bRect.y : 0} ${bRect.width} ${bRect.height}`);
   var svgData = svgEl.outerHTML;
   var preface = '<?xml version="1.0" standalone="no"?>\r\n';
   const blob = new Blob([preface, svgData], { type: 'image/svg+xml;charset=utf-8' });
@@ -61,12 +62,13 @@ export function getFileFromSvgEl(svgEl, name) {
  * Create a tile using the texturePath
  * @param {string} texturePath
  * @param {Element} svgEl
+ * @param {Boolean} autoCrop
  * @returns {Promise<[TileDocument]>}
  * @private
  */
-export async function createTile(texturePath, svgEl) {
+export async function createTile(texturePath, svgEl, autoCrop) {
   // Prepare the tile data from the texture path
-  const bRect = svgEl.getBoundingClientRect();
+  const bRect = getCroppedDimensions(svgEl, autoCrop);
   const data = mergeObject(getViewedCanvasCenterPosition(), {
     width: bRect.width,
     height: bRect.height,
@@ -85,13 +87,46 @@ export async function createTile(texturePath, svgEl) {
 
 /**
  * Edits all tiles present in the TilesLayer with textures src that share the same oldPath, with the new src paths
- * @param newPath
- * @param oldPath
+ * @param {string} newPath
+ * @param {string} oldPath
+ * @param {Element} svgEl
+ * @param {boolean} autoCrop
  */
-export async function editAllTiles(newPath, oldPath) {
-  const updateData = { 'texture.src': newPath };
+export async function editAllTiles(newPath, oldPath, svgEl, autoCrop) {
+  const bRect = getCroppedDimensions(svgEl, autoCrop);
+  const updateData = { 'texture.src': newPath, width: bRect.width, height: bRect.height };
   const linkedTokenDocs = game.canvas.tiles.tiles.map((c) => c.document).filter((td) => td.texture.src === oldPath);
   for (const td1 of linkedTokenDocs) {
     await td1.update(updateData);
   }
+}
+
+/**
+ * Returns a DOMRect of the svg actual contents
+ * @param {Element} svgEl
+ * @param {boolean} enabled if autoCrop is enabled
+ * @returns {DOMRect | Object}
+ */
+export function getCroppedDimensions(svgEl, enabled) {
+  const bRect = svgEl.getBoundingClientRect();
+  if (!enabled || svgEl.children == null || svgEl.children?.length === 0) return bRect;
+
+  let left = Infinity;
+  let right = 0;
+  let top = Infinity;
+  let bottom = 0;
+
+  for (const c of svgEl.children) {
+    const r = c.getBoundingClientRect();
+    left = Math.min(r.x - bRect.x, left);
+    right = Math.max(r.x - bRect.x + r.width, right);
+    top = Math.min(r.y - bRect.y, top);
+    bottom = Math.max(r.y - bRect.y + r.height, bottom);
+  }
+
+  bRect.x = left;
+  bRect.y = top;
+  bRect.width = right - left;
+  bRect.height = bottom - top;
+  return bRect;
 }

@@ -3,6 +3,7 @@ export const DEFAULT_SKETCH_SETTINGS = {
   backgroundColor: null,
   pollingRate: 60,
   backgroundSvg: null,
+  autoCrop: false,
   strokeOptions: {
     size: 12,
     thinning: 0.5,
