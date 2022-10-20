@@ -1,6 +1,3 @@
-<h1 align="center">
-  Sketch Tiles
-</h1>
 <p align="center">
   <img src=".github/images/logo-red-outline.png" width="720" />
 </p>
@@ -19,7 +16,7 @@
 <hr>
 If you enjoy this module, consider supporting it!
 
-![Ko-Fi](https://img.shields.io/badge/Ko--fi-F16061?style=for-the-badge&logo=ko-fi&logoColor=white)
+[![Ko-Fi](https://img.shields.io/badge/Ko--fi-F16061?style=for-the-badge&logo=ko-fi&logoColor=white)](https://ko-fi.com/clipplerblood)
 
 <p align="center">
   <img src=".github/images/index-cards-2.png" width=720 />
