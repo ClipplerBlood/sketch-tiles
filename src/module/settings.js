@@ -4,6 +4,7 @@ export const DEFAULT_SKETCH_SETTINGS = {
   pollingRate: 60,
   backgroundSvg: null,
   autoCrop: false,
+  hiddenTile: false,
   strokeOptions: {
     size: 12,
     thinning: 0.5,

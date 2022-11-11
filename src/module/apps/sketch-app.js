@@ -393,7 +393,7 @@ export class SketchApp extends Application {
     // due to foundry's texture caching. Simple alternative used: create new file and modify textures.
     // TODO: better alternative: custom Tile class that doesn't use caching
     if (createResponse.status !== 'success') return;
-    if (!this.isEdit) await createTile(createResponse.path, this.svg.node, this.sketchSettings.autoCrop);
+    if (!this.isEdit) await createTile(createResponse.path, this.svg.node, this.sketchSettings);
     else editAllTiles(createResponse.path, this.sourceSvgPath, this.svg.node, this.sketchSettings.autoCrop);
     await this.close();
   }

@@ -1,4 +1,6 @@
 # Changelog
+## 1.0.2
+- New setting: Hidden Tile. When ON, tiles created will be automatically be hidden
 
 ## 1.0.1
 - New setting: Auto Crop. When ON, sketches will automatically get cropped to their actual content size before being

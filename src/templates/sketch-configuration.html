@@ -97,7 +97,8 @@
     <div class="form-group">
       <label>{{localize "SKETCHTILES.importSvg"}}</label>
       <div class="form-fields">
-        <input class="image" type="text" name="importSvg" placeholder="path/image.png" value="{{sketchSettings.backgroundSvg}}" />
+        <input class="image" type="text" name="importSvg" placeholder="path/image.png"
+               value="{{sketchSettings.backgroundSvg}}" />
         {{filePicker target="importSvg" type="image"}}
       </div>
       <p class="hint">{{localize "SKETCHTILES.hints.importSvg"}}</p>
@@ -119,11 +120,20 @@
       <p class="hint">{{localize "SKETCHTILES.hints.autoCrop"}}</p>
     </div>
 
+    <div class="form-group slim">
+      <label>{{localize "SKETCHTILES.hiddenTile"}}</label>
+      <div class="form-fields">
+        <input type="checkbox" name="hiddenTile" {{checked sketchSettings.hiddenTile}}>
+      </div>
+      <p class="hint">{{localize "SKETCHTILES.hints.hiddenTile"}}</p>
+    </div>
+
     <div>
       <hr>
       <p style="text-align: center">{{localize "SKETCHTILES.hints.donations1"}}</p>
       <p style="text-align: center"><a href="https://ko-fi.com/clipplerblood">
-        <i class="fa-duotone fa-mug-hot" style="top:-2px; margin-right: 2px;"></i> Ko-fi <i class="fa-duotone fa-mug-hot" style="top:-2px; margin-left: 2px; transform: rotateY(180deg)"></i></a></p>
+        <i class="fa-duotone fa-mug-hot" style="top:-2px; margin-right: 2px;"></i> Ko-fi <i
+        class="fa-duotone fa-mug-hot" style="top:-2px; margin-left: 2px; transform: rotateY(180deg)"></i></a></p>
       <hr>
     </div>
   </div>

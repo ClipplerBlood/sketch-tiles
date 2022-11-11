@@ -62,18 +62,19 @@ export function getFileFromSvgEl(svgEl, name, autoCrop) {
  * Create a tile using the texturePath
  * @param {string} texturePath
  * @param {Element} svgEl
- * @param {Boolean} autoCrop
+ * @param {object} sketchSettings
  * @returns {Promise<[TileDocument]>}
  * @private
  */
-export async function createTile(texturePath, svgEl, autoCrop) {
+export async function createTile(texturePath, svgEl, sketchSettings) {
   // Prepare the tile data from the texture path
-  const bRect = getCroppedDimensions(svgEl, autoCrop);
+  const bRect = getCroppedDimensions(svgEl, sketchSettings.autoCrop);
   const data = mergeObject(getViewedCanvasCenterPosition(), {
     width: bRect.width,
     height: bRect.height,
     'texture.src': texturePath,
     'flags.sketch-tiles.isSketch': true,
+    hidden: sketchSettings.hiddenTile,
   });
 
   // Create the tile, and if successful activate the TilesLayer, select the tile and close this app.
