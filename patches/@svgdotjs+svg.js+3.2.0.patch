@@ -1,0 +1,13 @@
+diff --git a/node_modules/@svgdotjs/svg.js/src/types/List.js b/node_modules/@svgdotjs/svg.js/src/types/List.js
+index 197a155..fc64633 100644
+--- a/node_modules/@svgdotjs/svg.js/src/types/List.js
++++ b/node_modules/@svgdotjs/svg.js/src/types/List.js
+@@ -37,7 +37,7 @@ extend([ List ], {
+   }
+ })
+ 
+-const reserved = [ 'toArray', 'constructor', 'each' ]
++const reserved = [ 'toArray', 'constructor', 'each', 'equals' ]
+ 
+ List.extend = function (methods) {
+   methods = methods.reduce((obj, name) => {
