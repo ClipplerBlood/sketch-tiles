@@ -1,0 +1,39 @@
+{
+  "SKETCHTILES": {
+    "colors": "配色",
+    "strokeColors": "線の色",
+    "background": "背景色",
+    "strokeOptions": "線の設定",
+    "size": "サイズ",
+    "thinning": "筆圧",
+    "smoothing": "滑らかさ",
+    "streamline": "手振れ補正",
+    "simulatePressure": "筆圧をシミュレート",
+    "startTaper": "入り",
+    "endTaper": "抜き",
+    "apply": "適用",
+    "editSketch": "Sketch Tileの編集",
+    "other": "その他",
+    "importSvg": "SVGインポート",
+    "pollingRate": "描画間隔",
+    "autoCrop": "自動切り抜き",
+    "hiddenTile": "隠しタイル",
+    "notifications": {
+      "fileNotSvg": "インポートするファイルはSVG形式でなければいけません。"
+    },
+    "hints": {
+      "thinning": "筆圧による線の太さの効果量",
+      "smoothing": "線の角の滑らかさの度合いを設定します。",
+      "streamline": "線の手振れ補正の度合いを設定します。",
+      "simulatePressure": "速度によって筆圧をシミュレートします。",
+      "startTaper": "線の入りの設定です。",
+      "endTaper": "線の抜きの設定です。",
+      "pollingRate": "秒間何ポイント描画するか、設定します。",
+      "autoCrop": "保存したSVGを、本来のスケッチ内容へ切り抜きます。",
+      "hiddenTile": "スケッチからタイル生成する時、隠された状態で生成します。",
+      "importSvg": "スケッチに加えるSVGファイルのファイルパス",
+      "donations1": "このモジュールを楽しまれましたら、是非支援をよろしくお願いします！",
+      "donations2": "コーヒーを奢る"
+    }
+  }
+}
