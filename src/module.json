@@ -16,7 +16,7 @@
   "version": "This is auto replaced",
   "compatibility": {
     "minimum": "10",
-    "verified": "10"
+    "verified": "12"
   },
   "scripts": [],
   "esmodules": ["module/sketch-tiles.js"],
