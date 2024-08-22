@@ -379,10 +379,18 @@ export class SketchApp extends Application {
     const file = getFileFromSvgEl(this.svg.node, name, this.sketchSettings.autoCrop);
 
     // Create folder if not exists
-    try {
-      await FilePicker._manageFiles({ action: 'browseFiles', storage: source, target: path }, options);
-    } catch (e) {
-      await FilePicker._manageFiles({ action: 'createDirectory', storage: source, target: path }, options);
+    if (game.release.generation < 12) {
+      try {
+        await FilePicker._manageFiles({ action: 'browseFiles', storage: source, target: path }, options);
+      } catch (e) {
+        await FilePicker._manageFiles({ action: 'createDirectory', storage: source, target: path }, options);
+      }
+    } else {
+      try {
+        await FilePicker.browse(source, path, options);
+      } catch (e) {
+        await FilePicker.createDirectory(source, path, options);
+      }
     }
 
     // Create the file in the folder
