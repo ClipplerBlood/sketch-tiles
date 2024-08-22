@@ -5,7 +5,7 @@ import { SketchAppConfiguration } from './configuration-dialog.js';
 
 export class SketchApp extends Application {
   static get defaultOptions() {
-    return mergeObject(super.defaultOptions, {
+    return foundry.utils.mergeObject(super.defaultOptions, {
       template: 'modules/sketch-tiles/templates/sketch-app.html',
       classes: ['sketch-app'],
       width: 420,
@@ -54,7 +54,7 @@ export class SketchApp extends Application {
   }
 
   async updateSketchSettings(changes, options = { store: false }) {
-    this._sketchSettings = mergeObject(this._sketchSettings, changes);
+    this._sketchSettings = foundry.utils.mergeObject(this._sketchSettings, changes);
     if (options?.store) {
       return game.settings.set('sketch-tiles', 'sketchOptions', this._sketchSettings);
     }
@@ -445,6 +445,11 @@ export class SketchApp extends Application {
   setSvgBackgroundColor(bg = undefined) {
     bg = bg ?? this.sketchSettings.backgroundColor;
     this.svg.css({ 'background-color': bg });
+
+    if (this.sketchSettings.transparentBackground) {
+      const sketchApp = document.querySelector('.sketch-app');
+      sketchApp.style.setProperty('--window-bg', '#ffffff38');
+    }
   }
 
   /**

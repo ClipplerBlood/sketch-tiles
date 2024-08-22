@@ -9,9 +9,12 @@ export function i18n(s) {
 export function getViewedCanvasCenterPosition() {
   const [x, y] = [window.innerWidth / 2, window.innerHeight / 2];
   const t = canvas.stage.worldTransform;
-  const snappedPosition = canvas.grid.getSnappedPosition(
-    (x - t.tx) / canvas.stage.scale.x,
-    (y - t.ty) / canvas.stage.scale.y,
+  const snappedPosition = canvas.grid.getSnappedPoint(
+    {
+      x: (x - t.tx) / canvas.stage.scale.x,
+      y: (y - t.ty) / canvas.stage.scale.y,
+    },
+    { mode: CONST.GRID_SNAPPING_MODES.BOTTOM_LEFT_CORNER },
   );
   return { x: snappedPosition.x, y: snappedPosition.y };
 }
@@ -69,7 +72,7 @@ export function getFileFromSvgEl(svgEl, name, autoCrop) {
 export async function createTile(texturePath, svgEl, sketchSettings) {
   // Prepare the tile data from the texture path
   const bRect = getCroppedDimensions(svgEl, sketchSettings.autoCrop);
-  const data = mergeObject(getViewedCanvasCenterPosition(), {
+  const data = foundry.utils.mergeObject(getViewedCanvasCenterPosition(), {
     width: bRect.width,
     height: bRect.height,
     'texture.src': texturePath,

@@ -18,6 +18,7 @@
     "pollingRate": "Polling Rate",
     "autoCrop": "Auto Crop",
     "hiddenTile": "Hidden Tile",
+    "transparentBackground": "Transparent Background",
     "notifications": {
       "fileNotSvg": "The imported file must be an SVG"
     },
@@ -33,7 +34,8 @@
       "hiddenTile": "When creating a tile from the sketch, create it as hidden.",
       "importSvg": "Path to an SVG to be added to the sketch.",
       "donations1": "If you are enjoying this module, consider supporting it!",
-      "donations2": "Offer a Coffee"
+      "donations2": "Offer a Coffee",
+      "transparentBackground": "Make the window background transparent when the background is transparent. When off, the background will be white."
     }
   }
 }

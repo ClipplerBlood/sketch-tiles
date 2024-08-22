@@ -3,7 +3,7 @@ import { DEFAULT_SKETCH_SETTINGS } from '../settings.js';
 
 export class SketchAppConfiguration extends FormApplication {
   static get defaultOptions() {
-    return mergeObject(super.defaultOptions, {
+    return foundry.utils.mergeObject(super.defaultOptions, {
       classes: ['sheet'],
       template: 'modules/sketch-tiles/templates/sketch-configuration.html',
       width: this.width,
@@ -65,7 +65,7 @@ export class SketchAppConfiguration extends FormApplication {
     const form = this.element.find('form');
     let formData = {};
     form.serializeArray().forEach((i) => (formData[i.name] = i.value));
-    formData = expandObject(formData);
+    formData = foundry.utils.expandObject(formData);
 
     // Handle checkboxes
     form
@@ -73,10 +73,16 @@ export class SketchAppConfiguration extends FormApplication {
       .querySelectorAll('input[type="checkbox"]')
       .forEach((i) => (formData[i.name] = i.checked));
 
-    // Convert the colors to an array
-    const colors = this.sketchApp.sketchSettings.colors;
-    Object.entries(formData.colors).forEach(([key, value]) => (colors[key] = value));
-    formData.colors = colors;
+    // Handle the color pickers
+    let formColors = {};
+    for (const formColor of form.find('color-picker').get()) {
+      formColors[formColor.name] = formColor.value;
+    }
+    formColors = foundry.utils.expandObject(formColors);
+    formData = foundry.utils.mergeObject(formData, formColors);
+
+    // Convert the .colors to an array
+    formData.colors = Object.values(formData.colors);
 
     // Extract the "importSvg"
     const importSvgFilePath = formData.importSvg;

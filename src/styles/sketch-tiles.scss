@@ -1,4 +1,5 @@
 .sketch-app {
+  --window-bg: white;
   background: transparent;
 
   .sketch-app-container {
@@ -19,8 +20,8 @@
     padding: 0;
     overflow: hidden;
     position: relative;
-    background: #fff;
-    backdrop-filter: blur(5px);
+    background: var(--window-bg);
+    backdrop-filter: blur(2px);
   }
 
   header {

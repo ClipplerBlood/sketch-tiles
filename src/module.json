@@ -15,7 +15,7 @@
   "changelog": "https://github.com/ClipplerBlood/sketch-tiles/blob/master/CHANGELOG.md",
   "version": "This is auto replaced",
   "compatibility": {
-    "minimum": "10",
+    "minimum": "12",
     "verified": "12"
   },
   "scripts": [],

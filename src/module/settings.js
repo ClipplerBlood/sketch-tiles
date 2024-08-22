@@ -5,6 +5,7 @@ export const DEFAULT_SKETCH_SETTINGS = {
   backgroundSvg: null,
   autoCrop: false,
   hiddenTile: false,
+  transparentBackground: true,
   strokeOptions: {
     size: 12,
     thinning: 0.5,
