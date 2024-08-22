@@ -1,4 +1,8 @@
 # Changelog
+## 1.1.0
+- V12 compatibility
+- New setting: Transparent Background. When ON, the background of the *window* will be transparent instead of white.
+
 ## 1.0.2
 - New setting: Hidden Tile. When ON, tiles created will be automatically be hidden
 

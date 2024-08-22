@@ -446,10 +446,9 @@ export class SketchApp extends Application {
     bg = bg ?? this.sketchSettings.backgroundColor;
     this.svg.css({ 'background-color': bg });
 
-    if (this.sketchSettings.transparentBackground) {
-      const sketchApp = document.querySelector('.sketch-app');
-      sketchApp.style.setProperty('--window-bg', '#ffffff38');
-    }
+    const windowBg = this.sketchSettings.transparentBackground ? '#ffffff38' : 'white';
+    const sketchApp = document.querySelector('.sketch-app');
+    sketchApp.style.setProperty('--window-bg', windowBg);
   }
 
   /**
