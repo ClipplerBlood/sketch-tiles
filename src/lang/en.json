@@ -3,6 +3,7 @@
     "colors": "Colors",
     "strokeColors": "Stroke Colors",
     "background": "Background",
+    "backgroundColor": "Background Color",
     "strokeOptions": "Stroke",
     "size": "Size",
     "thinning": "Thinning",

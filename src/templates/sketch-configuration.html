@@ -17,17 +17,17 @@
       {{#each sketchSettings.colors as |color index|}}
         <div class="form-group">
           <div class="form-fields">
-            {{colorPicker name=(concat "colors." index) value=color}}
+            <color-picker name={{concat "colors." index}} value={{color}}></color-picker>
           </div>
         </div>
       {{/each}}
     </fieldset>
 
     <fieldset style="margin-bottom: 4px">
-      <legend>{{localize "SCENES.BackgroundColor"}}</legend>
+      <legend>{{localize "SKETCHTILES.backgroundColor"}}</legend>
       <div class="form-group">
         <div class="form-fields">
-          {{colorPicker name="backgroundColor" value=sketchSettings.backgroundColor}}
+          <color-picker name="backgroundColor" value={{sketchSettings.backgroundColor}}></color-picker>
         </div>
       </div>
     </fieldset>
@@ -99,7 +99,7 @@
       <div class="form-fields">
         <input class="image" type="text" name="importSvg" placeholder="path/image.png"
                value="{{sketchSettings.backgroundSvg}}" />
-        {{filePicker target="importSvg" type="image"}}
+        <file-picker target="importSvg" type="image"></file-picker>
       </div>
       <p class="hint">{{localize "SKETCHTILES.hints.importSvg"}}</p>
     </div>

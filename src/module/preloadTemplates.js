@@ -5,5 +5,5 @@ export async function preloadTemplates() {
     'modules/sketch-tiles/templates/sketch-configuration.html',
   ];
 
-  return loadTemplates(templatePaths);
+  return foundry.applications.handlebars.loadTemplates(templatePaths);
 }

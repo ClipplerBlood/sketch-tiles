@@ -25,13 +25,14 @@ Hooks.once('ready', async () => {});
 // Button registration
 Hooks.on('getSceneControlButtons', (controls) => {
   if (!game.user.isGM) return;
-  const tileControls = controls.find((c) => c.name === 'tiles');
-  tileControls.tools.push({
+  const tileControls = controls['tiles'];
+  tileControls.tools['Sketch Tiles'] = {
     name: 'Sketch Tiles',
     title: 'Sketch Tiles',
     icon: 'fa-duotone fa-cards-blank',
     onClick: () => SketchApp.create(),
-  });
+    button: true,
+  };
 });
 
 // Tile HUD edit button
@@ -42,15 +43,21 @@ Hooks.on('renderTileHUD', (tileHud, elementHud, options) => {
 
   // Add the edit button
   const title = i18n('SKETCHTILES.editSketch');
-  const editButton = $(`
-  <div class="control-icon " data-action="locked">
-    <i class="fa-duotone fa-cards-blank" style="width: 36px; height: 36px;" title="${title}"></i>
-  </div>
-  `);
-  elementHud.find('.col.right').append(editButton);
+  const editButton = document.createElement('button');
+  editButton.type = 'button';
+  editButton.className = 'control-icon';
+  editButton.setAttribute('data-action', 'locked');
+  editButton.setAttribute('data-tooltip', title);
 
-  // Add listener to button that renders a SketchApp with the current texture
-  editButton.click(() => SketchApp.create({ svgFilePath: tileHud.object.document.texture.src, isEdit: true }));
+  const icon = document.createElement('i');
+  icon.className = 'fa-duotone fa-cards-blank';
+  editButton.appendChild(icon);
+  elementHud.querySelector('.col.right').appendChild(editButton);
+
+  // Add the listener
+  editButton.addEventListener('click', () =>
+    SketchApp.create({ svgFilePath: tileHud.object.document.texture.src, isEdit: true }),
+  );
 });
 
 // Add a hook to allow external calling
