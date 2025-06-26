@@ -1,4 +1,8 @@
 # Changelog
+## 1.2.0
+- V13 compatibility
+- Updated configurator to ApplicationV2
+
 ## 1.1.0
 - V12 compatibility
 - New setting: Transparent Background. When ON, the background of the *window* will be transparent instead of white.
