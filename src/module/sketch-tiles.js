@@ -30,7 +30,7 @@ Hooks.on('getSceneControlButtons', (controls) => {
     name: 'Sketch Tiles',
     title: 'Sketch Tiles',
     icon: 'fa-duotone fa-cards-blank',
-    onClick: () => SketchApp.create(),
+    onChange: () => SketchApp.create(),
     button: true,
   };
 });
