@@ -1,28 +1,32 @@
 import { i18n } from '../utils.js';
 import { DEFAULT_SKETCH_SETTINGS } from '../settings.js';
 
-export class SketchAppConfiguration extends FormApplication {
-  static get defaultOptions() {
-    return foundry.utils.mergeObject(super.defaultOptions, {
-      classes: ['sheet'],
-      template: 'modules/sketch-tiles/templates/sketch-configuration.html',
-      width: this.width,
-      height: 'auto',
-      title: i18n('DOCUMENT.Settings') + ': Sketch App',
-      tabs: [
-        {
-          group: 'main',
-          navSelector: 'nav.tabs',
-          contentSelector: 'form',
-          initial: 'colors',
-        },
-      ],
-    });
-  }
+const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api;
 
-  static get width() {
-    return 480;
-  }
+export class SketchAppConfiguration extends HandlebarsApplicationMixin(ApplicationV2) {
+  static DEFAULT_OPTIONS = {
+    window: {
+      title: 'Sketch App',
+      contentClasses: ['standard-form'],
+    },
+    position: {
+      width: 480,
+      height: 'auto',
+    },
+    tag: 'form',
+  };
+
+  static PARTS = {
+    tabs: {
+      template: 'templates/generic/tab-navigation.hbs',
+    },
+    form: {
+      template: 'modules/sketch-tiles/templates/sketch-configuration.hbs',
+    },
+    footer: {
+      template: 'templates/generic/form-footer.hbs',
+    },
+  };
 
   constructor(sketchApp) {
     super();
@@ -36,33 +40,78 @@ export class SketchAppConfiguration extends FormApplication {
   static create(sketchApp) {
     const configurationApp = new SketchAppConfiguration(sketchApp);
     const renderOptions = {
-      left: Math.max(sketchApp.position.left - this.width, 10),
+      left: Math.max(sketchApp.position.left - this.DEFAULT_OPTIONS.position.width, 10),
       top: sketchApp.position.top,
     };
     configurationApp.render(true, renderOptions);
   }
 
-  /**
-   * @override
-   * @param options
-   * @returns {Object|Promise<Object>}
-   */
-  getData(options = {}) {
-    const data = super.getData(options);
-    data.sketchSettings = this.sketchApp.sketchSettings;
-    return data;
+  async _preparePartContext(partId, context) {
+    context = foundry.utils.deepClone(context);
+
+    switch (partId) {
+      case 'tabs':
+        context.tabs = [
+          {
+            id: 'colors',
+            group: 'main',
+            icon: 'fa-solid fa-palette',
+            active: true,
+            label: 'SKETCHTILES.colors',
+          },
+          {
+            id: 'strokeOptions',
+            group: 'main',
+            icon: 'fa-sharp fa-solid fa-paintbrush-pencil',
+            label: 'SKETCHTILES.strokeOptions',
+          },
+          {
+            id: 'otherOptions',
+            group: 'main',
+            icon: 'fa-solid fa-square-sliders',
+            label: 'SKETCHTILES.other',
+          },
+        ];
+        break;
+      case 'form':
+        context.sketchSettings = this.sketchApp.sketchSettings;
+        break;
+      case 'footer':
+        context.buttons = [
+          {
+            type: 'button',
+            icon: 'fa-solid fa-check',
+            label: 'SETTINGS.Save',
+            action: 'save',
+          },
+          {
+            type: 'button',
+            icon: 'fa-solid fa-save',
+            label: 'DRAWING.SubmitDefault',
+            action: 'saveDefault',
+          },
+          {
+            type: 'button',
+            icon: 'fa-solid fa-undo',
+            label: 'SETTINGS.Reset',
+            action: 'reset',
+          },
+        ];
+    }
+    console.log(partId, context);
+    return context;
   }
 
-  activateListeners(html) {
-    super.activateListeners(html);
-    html.find('button[data-action="save"]').click((ev) => this._onSave(ev));
+  _onRender(_context, _options) {
+    const html = $(this.element);
+    html.find('button[data-action="save"]').click((ev) => this._onSave(ev, false));
+    html.find('button[data-action="saveDefault"]').click((ev) => this._onSave(ev, true));
     html.find('button[data-action="reset"]').click(() => this._resetDefaults());
   }
 
-  _onSave(ev) {
+  _onSave(ev, isDefault = false) {
     // Get stuff from the form
-    const isSetDefault = $(ev.currentTarget).data('default');
-    const form = this.element.find('form');
+    const form = $(this.element.closest('form'));
     let formData = {};
     form.serializeArray().forEach((i) => (formData[i.name] = i.value));
     formData = foundry.utils.expandObject(formData);
@@ -91,14 +140,14 @@ export class SketchAppConfiguration extends FormApplication {
       if (importSvgFilePath.endsWith('.svg')) {
         if (importSvgFilePath !== this.sketchApp.sketchSettings.backgroundSvg)
           this.sketchApp.loadSVG(importSvgFilePath);
-        if (isSetDefault) formData.backgroundSvg = importSvgFilePath;
+        if (isDefault) formData.backgroundSvg = importSvgFilePath;
       } else ui.notifications.warn(i18n('SKETCHTILES.notifications.fileNotSvg'));
-    } else if (isSetDefault) {
+    } else if (isDefault) {
       formData.backgroundSvg = '';
     }
 
     // Update, close and update render app html
-    this.sketchApp.updateSketchSettings(formData, { store: isSetDefault });
+    this.sketchApp.updateSketchSettings(formData, { store: isDefault });
     this.close();
     this.sketchApp.renderPalette();
     this.sketchApp.setSvgBackgroundColor();

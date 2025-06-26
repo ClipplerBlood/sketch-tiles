@@ -1,17 +1,6 @@
-<form class="flexcol" action="" autocomplete="off">
-
+<div class="flexcol">
   {{log this}}
-
-  <nav class="sheet-tabs tabs" data-group="main">
-    <a class="item" data-tab="colors"><i class="fa-solid fa-palette"></i> {{localize "SKETCHTILES.colors"}}</a>
-    <a class="item" data-tab="strokeOptions"><i class="fa-sharp fa-solid fa-paintbrush-pencil"></i> {{localize
-      "SKETCHTILES.strokeOptions"}}
-      <a class="item" data-tab="otherOptions"><i class="fa-solid fa-square-sliders"></i> {{localize
-        "SKETCHTILES.other"}}
-      </a>
-  </nav>
-
-  <div class="tab" data-group="main" data-tab="colors">
+  <div class="tab active" data-group="main" data-tab="colors" style="padding-top: 8px;">
     <fieldset>
       <legend>{{localize "DRAWING.StrokeColor"}}</legend>
       {{#each sketchSettings.colors as |color index|}}
@@ -146,17 +135,4 @@
       <hr>
     </div>
   </div>
-
-
-  <footer class="sheet-footer flexrow">
-    <button type="button" data-action="save" data-default="false">
-      <i class="fa-solid fa-check"></i> {{localize "SETTINGS.Save"}}
-    </button>
-    <button type="button" data-action="save" data-default="true">
-      <i class="far fa-save"></i> {{localize "DRAWING.SubmitDefault"}}
-    </button>
-    <button type="button" data-action="reset">
-      <i class="fas fa-undo"></i> {{localize "SETTINGS.Reset"}}
-    </button>
-  </footer>
-</form>
+</div>

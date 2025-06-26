@@ -6,7 +6,7 @@ import { SketchAppConfiguration } from './configuration-dialog.js';
 export class SketchApp extends Application {
   static get defaultOptions() {
     return foundry.utils.mergeObject(super.defaultOptions, {
-      template: 'modules/sketch-tiles/templates/sketch-app.html',
+      template: 'modules/sketch-tiles/templates/sketch-app.hbs',
       classes: ['sketch-app'],
       width: 420,
       height: 700,
