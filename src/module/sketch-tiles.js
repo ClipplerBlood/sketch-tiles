@@ -46,7 +46,7 @@ Hooks.on('renderTileHUD', (tileHud, elementHud, options) => {
   const editButton = document.createElement('button');
   editButton.type = 'button';
   editButton.className = 'control-icon';
-  editButton.setAttribute('data-action', 'locked');
+  editButton.setAttribute('data-action', 'sketch-app-create');
   editButton.setAttribute('data-tooltip', title);
 
   const icon = document.createElement('i');
