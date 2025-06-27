@@ -1,7 +1,7 @@
 # Changelog
 ## 1.2.0
 - V13 compatibility
-- Updated configurator to ApplicationV2
+- Updated to ApplicationV2. The style of the module is now more aligned with v13 styling
 
 ## 1.1.0
 - V12 compatibility

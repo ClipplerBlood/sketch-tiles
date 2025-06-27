@@ -3,17 +3,26 @@ import { getStroke } from 'perfect-freehand';
 import { SVG } from '@svgdotjs/svg.js';
 import { SketchAppConfiguration } from './configuration-dialog.js';
 
-export class SketchApp extends Application {
-  static get defaultOptions() {
-    return foundry.utils.mergeObject(super.defaultOptions, {
-      template: 'modules/sketch-tiles/templates/sketch-app.hbs',
-      classes: ['sketch-app'],
+const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api;
+
+export class SketchApp extends HandlebarsApplicationMixin(ApplicationV2) {
+  static DEFAULT_OPTIONS = {
+    window: {
+      title: 'Sketch Tiles',
+      contentClasses: ['sketch-app'],
+      resizable: true,
+    },
+    position: {
       width: 420,
       height: 700,
-      title: 'Sketch Tiles',
-      resizable: true,
-    });
-  }
+    },
+  };
+
+  static PARTS = {
+    body: {
+      template: 'modules/sketch-tiles/templates/sketch-app.hbs',
+    },
+  };
 
   /**
    * Create a new SketchApp, then render it
@@ -109,47 +118,35 @@ export class SketchApp extends Application {
     document.removeEventListener('keydown', this.keyDownListener);
   }
 
-  /**
-   * Buttons
-   * @override
-   * @private
-   */
-  _getHeaderButtons() {
-    let buttons = super._getHeaderButtons();
-    buttons.unshift(
-      {
-        label: '',
-        icon: '',
-        class: 'sketch-color-picker',
-        onclick: (ev) => this.onColorPickerClick(ev),
-      },
-      {
-        label: 'Upload',
-        icon: 'fa-solid fa-up-from-line',
-        class: 'upload-sketch',
-        onclick: () => this._upload(),
-      },
-      {
-        label: '',
-        icon: 'fa-solid fa-sliders',
-        class: 'configure-sketch',
-        onclick: () => SketchAppConfiguration.create(this),
-      },
-    );
-    return buttons;
+  async _renderFrame(options) {
+    const frame = await super._renderFrame(options);
+
+    let buttons = `
+      <div class="header-control sketch-color-picker"></div>
+      <button type="button"
+        class="header-control fa-solid fa-up-from-line icon upload-sketch"
+        data-tooltip="Upload"></button>
+      <button type="button"
+        class="header-control fa-solid fa-sliders icon configure-sketch"
+        data-tooltip="Configure"></button>
+    `;
+    this.window.close.insertAdjacentHTML('beforebegin', buttons);
+
+    return frame;
   }
 
   /**
    * Activate the listeners
    * @override
-   * @param html
+   * @param _context
+   * @param _options
    */
-  activateListeners(html) {
-    super.activateListeners(html);
+  _onRender(_context, _options) {
+    const html = $(this.element);
     this.svg = SVG(html.find('svg').get(0));
 
     // Mouse Event listeners for the container
-    const $svgContainer = html.closest('.sketch-app-container');
+    const $svgContainer = html.find('.sketch-app-container');
     $svgContainer.on('pointerdown', (ev) => this.handlePointerDown(ev));
     $svgContainer.on('pointermove', (ev) => this.handlePointerMove(ev));
     $svgContainer.on('pointerup', (ev) => this.handlePointerUp(ev));
@@ -158,6 +155,11 @@ export class SketchApp extends Application {
 
     // Render the palette
     this.renderPalette();
+    const header = $(this.window.header);
+    header.find('.configure-sketch').on('click', () => SketchAppConfiguration.create(this));
+    header.find('.upload-sketch').on('click', () => this._upload());
+    header.find('.sketch-color-picker .sketch-color').on('click', (ev) => this.onColorPickerClick(ev));
+
     // Set the background color
     this.setSvgBackgroundColor();
   }
@@ -427,7 +429,7 @@ export class SketchApp extends Application {
    * Renders the palette as a header button
    */
   renderPalette() {
-    const colorPicker = this.element.find('.sketch-color-picker');
+    const colorPicker = $(this.window.header).find('.sketch-color-picker');
     colorPicker.html(
       this.sketchSettings.colors
         .map((c) => {
@@ -464,14 +466,15 @@ export class SketchApp extends Application {
    */
   setPosition({ left, top, width, height, scale } = {}) {
     // If the width is small, remove stuff from the bar
+    const html = $(this.element);
     if (width < 300) {
-      this.element.find('.window-title').hide();
-      this.element.find('.header-button.close').hide();
+      html.find('.window-title').hide();
+      html.find('.header-button.close').hide();
     } else if (width < 350) {
-      this.element.find('.window-title').hide();
+      html.find('.window-title').hide();
     } else {
-      this.element.find('.window-title').show();
-      this.element.find('.header-button.close').show();
+      html.find('.window-title').show();
+      html.find('.header-button.close').show();
     }
     super.setPosition({ left, top, width, height, scale });
   }
